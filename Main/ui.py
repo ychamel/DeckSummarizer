@@ -1,7 +1,7 @@
 from typing import List
 import streamlit as st
 from langchain.docstore.document import Document
-from knowledge_gpt.core.parsing import File
+from Main.core.parsing import File
 import openai
 from streamlit.logger import get_logger
 from typing import NoReturn
