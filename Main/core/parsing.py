@@ -1,6 +1,8 @@
 from io import BytesIO
+from time import sleep
 from typing import List, Any, Optional
 import re
+import streamlit as st
 
 import docx2txt
 from langchain.docstore.document import Document
@@ -9,6 +11,8 @@ from hashlib import md5
 
 from abc import abstractmethod, ABC
 from copy import deepcopy
+
+from Main.core.PDF_Parser import parse_img, fetch_text
 
 
 class File(ABC):
@@ -71,12 +75,47 @@ class PdfFile(File):
     def from_bytes(cls, file: BytesIO) -> "PdfFile":
         pdf = fitz.open(stream=file.read(), filetype="pdf")  # type: ignore
         docs = []
+        uuids = {}
+        parsing_bar = st.progress(0.0, text="progress")
+        size = len(pdf)
         for i, page in enumerate(pdf):
             text = page.get_text(sort=True)
             text = strip_consecutive_newlines(text)
+            # check ocr enabled
+            if st.session_state["OCR_ENABLED"]:
+                for image_file_object in page.images:
+                    name = image_file_object.name
+                    response = parse_img(name, image_file_object.data)
+                    if response:
+                        uuids[response['uid']] = len(docs)
+                    sleep(5)
             doc = Document(page_content=text.strip())
             doc.metadata["page"] = i + 1
             docs.append(doc)
+            #update progress
+            parsing_bar.progress(i / size, "Parsing PDF")
+        # retrieve images
+        progress_text = "Decoding Images"
+        # fetching responses
+        count = 0
+        while len(uuids.keys()) > 0 and count < 10:
+            progress = 0.0
+            size = len(uuids.keys())
+
+            for uuid, id in list(uuids.items()):
+                response = fetch_text(uuid)
+                if response['completed']:
+                    docs[id].page_content += f" ----- img_data ----- \n {response['document_text']} \n ----- end ----- "
+                    del uuids[uuid]
+                sleep(1)
+
+                # progress
+                progress += 1.0
+                parsing_bar.progress(id / size, "Decoding Images")
+
+            # add timeout
+            count += 1
+            sleep(5)
         # file.read() mutates the file object, which can affect caching
         # so we need to reset the file pointer to the beginning
         file.seek(0)
