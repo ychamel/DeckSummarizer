@@ -1,4 +1,6 @@
 import json
+import os
+
 import requests
 
 
@@ -9,7 +11,7 @@ def parse_img(name, byte_img):
 
     # Define the necessary headers and authentication for the request
     headers = {
-        "Authorization": "Token ac560906e09a3b9c501a64f6e68888151fdd4ae4"
+        "Authorization": os.environ.get("OCR_TOKEN", None)
     }
     # file_name = str(uuid.uuid4())
     file = {"image": (name, byte_img, "image/jpeg")}
@@ -31,7 +33,7 @@ def fetch_text(uuid):
 
     # Define the necessary headers and authentication for the request
     headers = {
-        "Authorization": "Token ac560906e09a3b9c501a64f6e68888151fdd4ae4"
+        "Authorization": os.environ.get("OCR_TOKEN", None)
     }
 
     # Send a POST request to create a new customer
