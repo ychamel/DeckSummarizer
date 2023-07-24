@@ -25,7 +25,7 @@ MODEL = "openai"
 # For testing
 # EMBEDDING, VECTOR_STORE, MODEL = ["debug"] * 3
 
-image = Image.open('logo.png')
+image = Image.open('Main/assets/logo.png')
 st.image(image)
 # Title
 st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
