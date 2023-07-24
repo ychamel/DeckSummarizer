@@ -117,7 +117,7 @@ class PdfFile(File):
 
             # add timeout
             count += 1
-            sleep(5)
+            sleep(10)
         # file.read() mutates the file object, which can affect caching
         # so we need to reset the file pointer to the beginning
         file.seek(0)
