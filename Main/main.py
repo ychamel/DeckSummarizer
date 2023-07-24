@@ -58,14 +58,16 @@ uploaded_file = st.file_uploader(
 if not uploaded_file or not openai_api_key:
     st.stop()
 
+file = st.session_state.get("FILE")
 # read files
-try:
-    file = read_file(uploaded_file)
-except Exception as e:
-    display_file_read_error(e)
+if not file:
+    try:
+        st.session_state["FILE"] = read_file(uploaded_file)
+    except Exception as e:
+        display_file_read_error(e)
 
 # chunk files
-chunked_file = chunk_file(file, chunk_size=1000, chunk_overlap=20)
+chunked_file = chunk_file(file, chunk_size=400, chunk_overlap=20)
 
 if not is_file_valid(file):
     st.stop()

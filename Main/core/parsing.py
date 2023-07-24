@@ -3,6 +3,7 @@ from time import sleep
 from typing import List, Any, Optional
 import re
 import streamlit as st
+from pypdf import PdfReader
 
 import docx2txt
 from langchain.docstore.document import Document
@@ -71,6 +72,58 @@ class DocxFile(File):
 
 
 class PdfFile(File):
+    @classmethod
+    def from_bytes(cls, file: BytesIO) -> "PdfFile":
+        reader = PdfReader(file)
+        docs = []
+        uuids = {}
+        parsing_bar = st.progress(0.0, text="progress")
+
+        size = len(reader.pages)
+        for i, page in enumerate(reader.pages):
+            text = page.extract_text()
+            text = strip_consecutive_newlines(text)
+            # check ocr enabled
+            if st.session_state["OCR_ENABLED"]:
+                for image_file_object in page.images:
+                    name = image_file_object.name
+                    response = parse_img(name, image_file_object.data)
+                    if response:
+                        uuids[response['uid']] = len(docs)
+                    sleep(5)
+            doc = Document(page_content=text.strip())
+            doc.metadata["page"] = i + 1
+            docs.append(doc)
+            #update progress
+            parsing_bar.progress(i / size, "Parsing PDF")
+        # retrieve images
+        progress_text = "Decoding Images"
+        # fetching responses
+        count = 0
+        while len(uuids.keys()) > 0 and count < 10:
+            progress = 0.0
+            size = len(uuids.keys())
+
+            for uuid, id in list(uuids.items()):
+                response = fetch_text(uuid)
+                if response['completed']:
+                    docs[id].page_content += f" ----- img_data ----- \n {response['document_text']} \n ----- end ----- "
+                    del uuids[uuid]
+                sleep(1)
+
+                # progress
+                progress += 1.0
+                parsing_bar.progress(id / size, "Decoding Images")
+
+            # add timeout
+            count += 1
+            sleep(5)
+        # file.read() mutates the file object, which can affect caching
+        # so we need to reset the file pointer to the beginning
+        file.seek(0)
+        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
+
+class PdfFile2(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PdfFile":
         pdf = fitz.open(stream=file.read(), filetype="pdf")  # type: ignore
