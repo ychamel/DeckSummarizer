@@ -81,12 +81,14 @@ class PdfFile(File):
         for i, page in enumerate(pdf):
             text = page.get_text(sort=True)
             text = strip_consecutive_newlines(text)
-            st.write(pdf)
             # check ocr enabled
             if st.session_state["OCR_ENABLED"]:
-                for image_file_object in page.images:
-                    name = image_file_object.name
-                    response = parse_img(name, image_file_object.data)
+                for images in page.get_images():
+                    xref = images[0]
+                    img = pdf.extract_image(xref)
+                    name = str(xref)
+                    binary = img['image']
+                    response = parse_img(name, binary)
                     if response:
                         uuids[response['uid']] = len(docs)
                     sleep(5)
