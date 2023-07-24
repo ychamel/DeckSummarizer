@@ -81,7 +81,7 @@ class PdfFile(File):
         for i, page in enumerate(pdf):
             text = page.get_text(sort=True)
             text = strip_consecutive_newlines(text)
-            print(pdf)
+            st.write(pdf)
             # check ocr enabled
             if st.session_state["OCR_ENABLED"]:
                 for image_file_object in page.images:
