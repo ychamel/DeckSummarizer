@@ -71,7 +71,7 @@ class DocxFile(File):
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
-class PdfFile(File):
+class PdfFile2(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PdfFile":
         reader = PdfReader(file)
@@ -123,7 +123,7 @@ class PdfFile(File):
         file.seek(0)
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
-class PdfFile2(File):
+class PdfFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PdfFile":
         pdf = fitz.open(stream=file.read(), filetype="pdf")  # type: ignore
