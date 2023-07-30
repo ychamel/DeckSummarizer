@@ -62,8 +62,8 @@ file = st.session_state.get("FILE")
 # read files
 if not file:
     try:
-        st.session_state["FILE"] = read_file(uploaded_file)
-        file = st.session_state["FILE"]
+        file = read_file(uploaded_file)
+        st.session_state["FILE"] = file
     except Exception as e:
         display_file_read_error(e)
 
