@@ -58,7 +58,7 @@ uploaded_files = st.file_uploader(
 if not uploaded_files or not openai_api_key:
     st.stop()
 
-update_btn = st.button('Update Files', style='primary')
+update_btn = st.button('Update Files')
 files = st.session_state.get("FILES")
 # read files
 if update_btn:
