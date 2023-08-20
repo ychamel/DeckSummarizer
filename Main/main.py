@@ -137,14 +137,14 @@ if submit:
     st.session_state.get("messages").append({"role": "user", "content": query})
     st.session_state.get("messages").append({"role": "assistant", "content": result.answer})
     with answer_col:
+        st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
             st.chat_message(msg["role"]).write(msg["content"])
-        # st.markdown("#### Answer")
         # st.markdown(result.answer)
 
     with sources_col:
         st.markdown("#### Sources")
         for source in result.sources:
-            st.markdown(source.page_content)
+            st.write(source.page_content)
             st.markdown(source.metadata["source"])
             st.markdown("---")
