@@ -113,6 +113,10 @@ if show_full_doc:
         # Hack to get around st.markdown rendering LaTeX
         st.markdown(f"<p>{wrap_doc_in_html(docs)}</p>", unsafe_allow_html=True)
 
+# setup new chat
+if not st.session_state.get("messages"):
+    st.session_state.messages = []
+
 # when chat sent
 if submit:
     if not is_query_valid(query):
@@ -129,10 +133,14 @@ if submit:
         openai_api_key=openai_api_key,
         temperature=0,
     )
-
+    # add answer
+    st.session_state.get("messages").append({"role": "user", "content": query})
+    st.session_state.get("messages").append({"role": "assistant", "content": result.answer})
     with answer_col:
-        st.markdown("#### Answer")
-        st.markdown(result.answer)
+        for msg in reversed(st.session_state.get("messages")):
+            st.chat_message(msg["role"]).write(msg["content"])
+        # st.markdown("#### Answer")
+        # st.markdown(result.answer)
 
     with sources_col:
         st.markdown("#### Sources")
