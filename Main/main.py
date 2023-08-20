@@ -42,38 +42,45 @@ sidebar()
 
 openai_api_key = st.session_state.get("OPENAI_API_KEY")
 
-
 if not openai_api_key:
     st.warning(
         "please enter a password to access the app!"
     )
 
 # uploader
-uploaded_file = st.file_uploader(
-    "Upload a pdf, docx, or txt file",
+uploaded_files = st.file_uploader(
+    "Upload file of the following format: pdf, docx, or txt",
     type=["pdf", "docx", "txt"],
     help="Scanned documents are not supported yet!",
+    accept_multiple_files=True
 )
 
-if not uploaded_file or not openai_api_key:
+if not uploaded_files or not openai_api_key:
     st.stop()
 
-update_btn = st.button('Update Files')
-file = st.session_state.get("FILE")
+update_btn = st.button('Update Files', style='primary')
+files = st.session_state.get("FILES")
 # read files
 if update_btn:
-    try:
-        file = read_file(uploaded_file)
-        st.session_state["FILE"] = file
-    except Exception as e:
-        display_file_read_error(e)
-elif not file:
+    files = []
+    for uploaded_file in uploaded_files:
+        try:
+            file = read_file(uploaded_file)
+            files.append(file)
+        except Exception as e:
+            display_file_read_error(e)
+    st.session_state["FILES"] = files
+elif not files:
     st.stop()
 # chunk files
-chunked_file = chunk_file(file, chunk_size=400, chunk_overlap=20)
+chunked_files = []
+for file in files:
+    chunked_file = chunk_file(file, chunk_size=400, chunk_overlap=20)
+    chunked_files.append(chunked_file)
 
-if not is_file_valid(file):
-    st.stop()
+for file in files:
+    if not is_file_valid(file):
+        st.stop()
 
 if not is_open_ai_key_valid(openai_api_key):
     st.stop()
@@ -81,7 +88,7 @@ if not is_open_ai_key_valid(openai_api_key):
 # save chunks to temp db
 with st.spinner("Indexing document... This may take a while⏳"):
     folder_index = embed_files(
-        files=[chunked_file],
+        files=chunked_files,
         embedding=EMBEDDING,
         vector_store=VECTOR_STORE,
         openai_api_key=openai_api_key,
@@ -100,8 +107,11 @@ with st.expander("Advanced Options"):
 # option to show raw read data
 if show_full_doc:
     with st.expander("Document"):
+        docs = []
+        for file in files:
+            docs.extend(file.docs)
         # Hack to get around st.markdown rendering LaTeX
-        st.markdown(f"<p>{wrap_doc_in_html(file.docs)}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p>{wrap_doc_in_html(docs)}</p>", unsafe_allow_html=True)
 
 # when chat sent
 if submit:
