@@ -28,6 +28,20 @@ MODEL = "openai"
 # init
 st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
 
+st.markdown(
+    """
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3TZSGJBX3W"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-3TZSGJBX3W');
+    </script>
+    """
+    ,unsafe_allow_html=True
+)
 # image
 image = Image.open('Main/assets/logo.png')
 st.image(image)
