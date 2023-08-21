@@ -207,19 +207,18 @@ class PPTFile(File):
                         doc = Document(page_content=run.text.strip())
                         doc.metadata["page"] = i + 1
                         docs.append(doc)
-        file.seek(0)
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
 
 def read_file(file: BytesIO) -> File:
     """Reads an uploaded file and returns a File object"""
-    if file.name.lower().endswith(".docx"):
+    if file.name.lower().endswith(".docx") or file.name.lower().endswith(".doc"):
         return DocxFile.from_bytes(file)
     elif file.name.lower().endswith(".pdf"):
         return PdfFile.from_bytes(file)
     elif file.name.lower().endswith(".txt"):
         return TxtFile.from_bytes(file)
-    elif file.name.lower().endswith(".ppt"):
+    elif file.name.lower().endswith(".pptx") or file.name.lower().endswith(".ppt"):
         return PPTFile.from_bytes(file)
     else:
         raise NotImplementedError(f"File type {file.name.split('.')[-1]} not supported")
