@@ -4,6 +4,7 @@ from typing import List, Any, Optional
 import re
 import streamlit as st
 from pypdf import PdfReader
+from pptx import Presentation
 
 import docx2txt
 from langchain.docstore.document import Document
@@ -20,11 +21,11 @@ class File(ABC):
     """Represents an uploaded file comprised of Documents"""
 
     def __init__(
-        self,
-        name: str,
-        id: str,
-        metadata: Optional[dict[str, Any]] = None,
-        docs: Optional[List[Document]] = None,
+            self,
+            name: str,
+            id: str,
+            metadata: Optional[dict[str, Any]] = None,
+            docs: Optional[List[Document]] = None,
     ):
         self.name = name
         self.id = id
@@ -94,7 +95,7 @@ class PdfFile(File):
             doc = Document(page_content=text.strip())
             doc.metadata["page"] = i + 1
             docs.append(doc)
-            #update progress
+            # update progress
             parsing_bar.progress(i / size, "Parsing PDF")
         # retrieve images
         progress_text = "Decoding Images"
@@ -123,9 +124,10 @@ class PdfFile(File):
         file.seek(0)
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
+
 class PdfFile2(File):
     @classmethod
-    def from_bytes(cls, file: BytesIO) -> "PdfFile":
+    def from_bytes(cls, file: BytesIO) -> "PdfFile2":
         pdf = fitz.open(stream=file.read(), filetype="pdf")  # type: ignore
         docs = []
         uuids = {}
@@ -148,7 +150,7 @@ class PdfFile2(File):
             doc = Document(page_content=text.strip())
             doc.metadata["page"] = i + 1
             docs.append(doc)
-            #update progress
+            # update progress
             parsing_bar.progress(i / size, "Parsing PDF")
         # retrieve images
         progress_text = "Decoding Images"
@@ -188,6 +190,27 @@ class TxtFile(File):
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
+class PPTFile(File):
+    @classmethod
+    def from_bytes(cls, file: BytesIO) -> "PPTFile":
+        # read file
+        prs = Presentation(File)
+
+        docs = []
+        # loop on slides
+        for i, slide in enumerate(prs.slides):
+            for shape in slide.shapes:
+                if not shape.has_text_frame:
+                    continue
+                for paragraph in shape.text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        doc = Document(page_content=run.text.strip())
+                        doc.metadata["page"] = i + 1
+                        docs.append(doc)
+        file.seek(0)
+        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
+
+
 def read_file(file: BytesIO) -> File:
     """Reads an uploaded file and returns a File object"""
     if file.name.lower().endswith(".docx"):
@@ -196,5 +219,7 @@ def read_file(file: BytesIO) -> File:
         return PdfFile.from_bytes(file)
     elif file.name.lower().endswith(".txt"):
         return TxtFile.from_bytes(file)
+    elif file.name.lower().endswith(".ppt"):
+        return PPTFile.from_bytes(file)
     else:
         raise NotImplementedError(f"File type {file.name.split('.')[-1]} not supported")

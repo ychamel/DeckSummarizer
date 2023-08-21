@@ -50,7 +50,7 @@ if not openai_api_key:
 # uploader
 uploaded_files = st.file_uploader(
     "Upload file of the following format: pdf, docx, or txt",
-    type=["pdf", "docx", "txt"],
+    type=["pdf", "docx", "txt", "ppt"],
     help="Scanned documents are not supported yet!",
     accept_multiple_files=True
 )
@@ -75,7 +75,7 @@ elif not files:
 # chunk files
 chunked_files = []
 for file in files:
-    chunked_file = chunk_file(file, chunk_size=400, chunk_overlap=20)
+    chunked_file = chunk_file(file, chunk_size=1000, chunk_overlap=50)
     chunked_files.append(chunked_file)
 
 for file in files:
