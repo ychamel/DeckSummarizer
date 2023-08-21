@@ -194,7 +194,7 @@ class PPTFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PPTFile":
         # read file
-        prs = Presentation(File)
+        prs = Presentation(file)
 
         docs = []
         # loop on slides
