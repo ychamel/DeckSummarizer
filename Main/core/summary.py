@@ -12,7 +12,7 @@ def complete(prompt):
     ]
     messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-16k",
+        model="gpt-3.5-turbo",
         messages=messages
     )
     answer = ""
@@ -21,7 +21,7 @@ def complete(prompt):
     return answer
 
 
-def write_analysis(topic, folder_index):
+def write_analysis(title, topic, folder_index):
     # retrieve relevant data
     query = f"get me all information regarding the following topic: {topic}"
     retrieved = query_folder(
@@ -32,7 +32,8 @@ def write_analysis(topic, folder_index):
         openai_api_key=st.session_state.get("OPENAI_API_KEY"),
         temperature=0,
     )
-    prompt = f"Write a detailed analysis on the following topic: {topic}, based on the info bellow: \n" \
+    prompt = f"Write a detailed report on the following topic: {title}, based on the info below. Don't refer to the sources given in the retrieved data, and if there is not enough data just say that not enough data was supplied. \n" \
+             f"info: \n" \
              f"{retrieved}"
     # prompt chatgpt for result
     result = complete(prompt)
@@ -40,25 +41,20 @@ def write_analysis(topic, folder_index):
 
 
 def write_report(folder_index):
-    topics = [
-        "Company Overview",
-        "Company Headcount",
-        "Number of Clients",
-        "Geography Presence",
-        "Number of Products",
-        "Key Milestones and Figures",
-        "Market Analysis",
-        "Products/Services Offering",
-        "Business Model",
-        "Pricing",
-        "Financial Analysis (Tables at the end + Graphs)",
-        "Strategy Analysis",
-        "Final Recommendations and Analysis",
-    ]
+    topics = {
+        "Company Overview": "Company Overview, this includes Company Headcount, Number of Clients, Geography Presence, Number of Products, and Key Milestones and Figures ",
+        "Market Analysis": "the market analysis for the company and a detailed assessment of the business's target market and the competitive landscape within their specific industry",
+        "Products/Services Offering": "the product or service offering being sold by the company",
+        "Business Model": "The buisness model of the company",
+        "Pricing": "The pricing of the company and their products",
+        "Financial Analysis": "The Financials of the company including the balance sheet, the income statement, and the cash flow statement",
+        "Strategy Analysis": "The strategy of the company and how they plan to approach the market",
+        "Final Recommendations and Analysis": "the company's market approach and their financials",
+    }
     out = ""
 
-    for topic in topics:
-        out += f"\n \n{topic}: \n \n"
-        out += write_analysis(topic, folder_index)
+    for title, topic in topics.items():
+        out += f"\n \n{title}: \n \n"
+        out += write_analysis(title, topic, folder_index)
 
     return out
