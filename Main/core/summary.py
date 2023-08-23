@@ -158,12 +158,11 @@ def complete(prompt):
     return answer
 
 
-def write_analysis(title, topic, folder_index):
+def write_analysis(topic, folder_index):
     # retrieve relevant data
-    query = f"get me all information regarding the following topic: {topic}"
+    query = f"{topic}"
     retrieved = retrieve(query, folder_index)
-    prompt = f"Write a detailed report on the following topic: {title}, based on the info below. Don't refer to the sources given in the retrieved data, and if there is not enough data just say that not enough data was supplied. \n" \
-             f"info: \n" \
+    prompt = f"Write a short essay on {topic}, given the following information: \n" \
              f"{retrieved}"
     # prompt chatgpt for result
     result = complete(prompt)
@@ -172,19 +171,19 @@ def write_analysis(title, topic, folder_index):
 
 def write_report(folder_index):
     topics = {
-        "Company Overview": "Company Overview, this includes Company Headcount, Number of Clients, Geography Presence, Number of Products, and Key Milestones and Figures ",
-        "Market Analysis": "the market analysis for the company and a detailed assessment of the business's target market and the competitive landscape within their specific industry",
-        "Products/Services Offering": "the product or service offering being sold by the company",
+        "Company Overview": "The Company Overview, this includes Company Headcount, Number of Clients, Geography Presence, Number of Products, and Key Milestones and Figures ",
+        "Market Analysis": "The market analysis for the company and a detailed assessment of the business's target market and the competitive landscape within their specific industry",
+        "Products/Services Offering": "the products and/or services offering being sold by the company",
         "Business Model": "The buisness model of the company",
-        "Pricing": "The pricing of the company and their products",
-        "Financial Analysis": "The Financials of the company including the balance sheet, the income statement, and the cash flow statement",
-        "Strategy Analysis": "The strategy of the company and how they plan to approach the market",
-        "Final Recommendations and Analysis": "the company's market approach and their financials",
+        "Pricing": "The company's pricing",
+        "Financial Analysis": "The Financial analysis of the company including the balance sheet, the income statement, and the cash flow statement and any given financial reports.",
+        "Strategy Analysis": "The strategy analysis of the company and how they plan to approach the market",
+        "Final Recommendations and Analysis": "final recomendation and analysis for the company's market approach and their financials",
     }
     out = ""
 
     for title, topic in topics.items():
         out += f"\n \n{title}: \n \n"
-        out += write_analysis(title, topic, folder_index)
+        out += write_analysis(topic, folder_index)
 
     return out

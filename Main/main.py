@@ -122,8 +122,9 @@ with st.expander("Advanced Options"):
 
 # generate summary
 if generate_summary:
-    pinecone_index = store_txt(files)
-    result = write_report(pinecone_index)
+    with st.spinner("Generating Report... This may take a while⏳"):
+        pinecone_index = store_txt(files)
+        result = write_report(pinecone_index)
     st.download_button("Download Report", result)
 
 # option to show raw read data
