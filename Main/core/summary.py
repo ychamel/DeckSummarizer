@@ -82,7 +82,7 @@ def store_txt(files: list[File]):
     ]
     index = init_pinecone(res['data'][0]['embedding'])
     store_data(data, embed_model, index)
-
+    return index
 
 def init_pinecone(dimension):
     pinecone.init(api_key=st.session_state.get('PINECONE_API_KEY'),
