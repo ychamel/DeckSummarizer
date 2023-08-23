@@ -4,6 +4,8 @@ import openai
 import tiktoken
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from Main.core.parsing import File
 from Main.core.qa import query_folder
 import streamlit as st
 
@@ -52,7 +54,7 @@ def retrieve(query: str, index):
     return prompt
 
 
-def store_txt(files):
+def store_txt(files: list[File]):
     input_txt = ""
     for file in files:
         for doc in file.docs:
