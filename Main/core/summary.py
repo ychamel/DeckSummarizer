@@ -52,10 +52,11 @@ def retrieve(query: str, index):
     return prompt
 
 
-def store_txt(file):
+def store_txt(files):
     input_txt = ""
-    for doc in file.docs:
-        input_txt += doc.page_content
+    for file in files:
+        for doc in file.docs:
+            input_txt += doc.page_content + '\n'
 
     # Text Splitter
     text_splitter = RecursiveCharacterTextSplitter(

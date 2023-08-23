@@ -108,7 +108,7 @@ with st.spinner("Indexing document... This may take a while⏳"):
         vector_store=VECTOR_STORE,
         openai_api_key=openai_api_key,
     )
-    pinecone_index = store_txt(chunked_files)
+    pinecone_index = store_txt(files)
 
 # open chat area
 with st.form(key="qa_form"):
