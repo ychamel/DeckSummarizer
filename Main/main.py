@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 from Main.components.sidebar import sidebar
-from Main.core.summary import write_report
+from Main.core.summary import write_report, store_txt
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -108,6 +108,7 @@ with st.spinner("Indexing document... This may take a while⏳"):
         vector_store=VECTOR_STORE,
         openai_api_key=openai_api_key,
     )
+    pinecone_index = store_txt(chunked_files)
 
 # open chat area
 with st.form(key="qa_form"):
@@ -122,8 +123,9 @@ with st.expander("Advanced Options"):
 
 # generate summary
 if generate_summary:
-    result = write_report(folder_index)
+    result = write_report(pinecone_index)
     st.download_button("Download Report", result)
+
 # option to show raw read data
 if show_full_doc:
     with st.expander("Document"):
