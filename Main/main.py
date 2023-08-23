@@ -108,7 +108,6 @@ with st.spinner("Indexing document... This may take a while⏳"):
         vector_store=VECTOR_STORE,
         openai_api_key=openai_api_key,
     )
-    pinecone_index = store_txt(files)
 
 # open chat area
 with st.form(key="qa_form"):
@@ -123,6 +122,7 @@ with st.expander("Advanced Options"):
 
 # generate summary
 if generate_summary:
+    pinecone_index = store_txt(files)
     result = write_report(pinecone_index)
     st.download_button("Download Report", result)
 
