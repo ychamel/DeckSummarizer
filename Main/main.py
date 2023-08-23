@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 
 from Main.components.sidebar import sidebar
+from Main.core.summary import write_report
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -117,7 +118,12 @@ with st.form(key="qa_form"):
 with st.expander("Advanced Options"):
     return_all_chunks = st.checkbox("Show all chunks retrieved from vector search")
     show_full_doc = st.checkbox("Show parsed contents of the document")
+    generate_summary = st.button("Generate Summary")
 
+# generate summary
+if generate_summary:
+    result = write_report(folder_index)
+    st.download_button("Download Report", result)
 # option to show raw read data
 if show_full_doc:
     with st.expander("Document"):
