@@ -26,8 +26,8 @@ MODEL = "openai"
 # For testing
 # EMBEDDING, VECTOR_STORE, MODEL = ["debug"] * 3
 
-with st.header:
-    st.markdown(
+
+st.markdown(
         """
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3TZSGJBX3W"></script>
@@ -39,8 +39,8 @@ with st.header:
   gtag('config', 'G-3TZSGJBX3W');
 </script>
         """
-        , unsafe_allow_html=True
-    )
+        ,
+    unsafe_allow_html=True)
 
 # init
 st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
