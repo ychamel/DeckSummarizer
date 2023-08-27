@@ -2,6 +2,8 @@ from io import BytesIO
 from time import sleep
 from typing import List, Any, Optional
 import re
+
+import pandas as pd
 import streamlit as st
 from pypdf import PdfReader
 from pptx import Presentation
@@ -190,6 +192,16 @@ class TxtFile(File):
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
+class XLFile(File):
+    @classmethod
+    def from_bytes(cls, file: BytesIO) -> "XLFile":
+        dataframe = pd.read_excel(file)
+        dataframe = strip_consecutive_newlines(dataframe.to_string())
+        file.seek(0)
+        doc = Document(page_content=dataframe.strip())
+        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
+
+
 class PPTFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PPTFile":
@@ -221,5 +233,7 @@ def read_file(file: BytesIO) -> File:
         return TxtFile.from_bytes(file)
     elif file.name.lower().endswith(".pptx"):
         return PPTFile.from_bytes(file)
+    elif file.name.lower().endswith(".xlsx"):
+        return XLFile.from_bytes(file)
     else:
         raise NotImplementedError(f"File type {file.name.split('.')[-1]} not supported")
