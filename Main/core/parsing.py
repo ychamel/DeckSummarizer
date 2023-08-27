@@ -198,7 +198,7 @@ class XLFile(File):
         dataframes = pd.read_excel(file,None)
         docs = []
         for dataframe in dataframes:
-            dataframe = strip_consecutive_newlines(dataframe.to_string())
+            dataframe = strip_consecutive_newlines(str(dataframe))
             file.seek(0)
             doc = Document(page_content=dataframe.strip())
             docs.append(doc)
