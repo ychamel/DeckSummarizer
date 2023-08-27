@@ -26,7 +26,8 @@ MODEL = "openai"
 # For testing
 # EMBEDDING, VECTOR_STORE, MODEL = ["debug"] * 3
 
-
+# init
+st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
 st.markdown(
         """
 <!-- Google tag (gtag.js) -->
@@ -41,9 +42,6 @@ st.markdown(
         """
         ,
     unsafe_allow_html=True)
-
-# init
-st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
 
 # image
 image = Image.open('Main/assets/logo.png')
