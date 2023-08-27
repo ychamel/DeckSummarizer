@@ -195,11 +195,14 @@ class TxtFile(File):
 class XLFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "XLFile":
-        dataframe = pd.read_excel(file)
-        dataframe = strip_consecutive_newlines(dataframe.to_string())
-        file.seek(0)
-        doc = Document(page_content=dataframe.strip())
-        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
+        dataframes = pd.read_excel(file,None)
+        docs = []
+        for dataframe in dataframes:
+            dataframe = strip_consecutive_newlines(dataframe.to_string())
+            file.seek(0)
+            doc = Document(page_content=dataframe.strip())
+            docs.append(doc)
+        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
 
 class PPTFile(File):
