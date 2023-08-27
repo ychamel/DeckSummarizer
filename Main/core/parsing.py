@@ -197,7 +197,7 @@ class XLFile(File):
     def from_bytes(cls, file: BytesIO) -> "XLFile":
         dataframes = pd.read_excel(file,None)
         docs = []
-        for dataframe in dataframes:
+        for title, dataframe in dataframes.items():
             dataframe = strip_consecutive_newlines(str(dataframe))
             file.seek(0)
             doc = Document(page_content=dataframe.strip())
