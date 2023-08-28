@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit_analytics
 from PIL import Image
 
 from Main.components.sidebar import sidebar
@@ -28,21 +29,7 @@ MODEL = "openai"
 
 # init
 st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
-st.markdown(
-        """
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3TZSGJBX3W"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-3TZSGJBX3W');
-</script>
-        """
-        ,
-    unsafe_allow_html=True)
-
+streamlit_analytics.start_tracking()
 # image
 image = Image.open('Main/assets/logo.png')
 st.image(image)
@@ -171,3 +158,4 @@ if submit:
             st.write(source.page_content)
             st.markdown(source.metadata["source"])
             st.markdown("---")
+streamlit_analytics.stop_tracking()
