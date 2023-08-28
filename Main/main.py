@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit_analytics
 from PIL import Image
 
 from Main.components.sidebar import sidebar
@@ -29,7 +28,6 @@ MODEL = "openai"
 
 # init
 st.set_page_config(page_title="Synapse Deck Summarizer", page_icon="📖", layout="wide")
-streamlit_analytics.start_tracking()
 # image
 image = Image.open('Main/assets/logo.png')
 st.image(image)
@@ -158,4 +156,3 @@ if submit:
             st.write(source.page_content)
             st.markdown(source.metadata["source"])
             st.markdown("---")
-streamlit_analytics.stop_tracking()
