@@ -88,7 +88,6 @@ class PdfFile(File):
             text = strip_consecutive_newlines(text)
             # check ocr enabled
             if st.session_state["OCR_ENABLED"]:
-                st.write("reading OCR")
                 for image_file_object in page.images:
                     name = image_file_object.name
                     response = parse_img(name, image_file_object.data)
@@ -100,6 +99,7 @@ class PdfFile(File):
             docs.append(doc)
             # update progress
             parsing_bar.progress(i / size, "Parsing PDF")
+        parsing_bar.progress(1.0, "Parsing PDF")
         # retrieve images
         progress_text = "Decoding Images"
         # fetching responses
@@ -122,6 +122,7 @@ class PdfFile(File):
             # add timeout
             count += 1
             sleep(10)
+        parsing_bar.progress(1.0, "Decoding Images")
         # file.read() mutates the file object, which can affect caching
         # so we need to reset the file pointer to the beginning
         file.seek(0)
@@ -196,7 +197,7 @@ class TxtFile(File):
 class XLFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "XLFile":
-        dataframes = pd.read_excel(file,None)
+        dataframes = pd.read_excel(file, None)
         docs = []
         for title, dataframe in dataframes.items():
             dataframe = strip_consecutive_newlines(dataframe.to_string())
