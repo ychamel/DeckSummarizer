@@ -88,6 +88,7 @@ class PdfFile(File):
             text = strip_consecutive_newlines(text)
             # check ocr enabled
             if st.session_state["OCR_ENABLED"]:
+                st.write("reading OCR")
                 for image_file_object in page.images:
                     name = image_file_object.name
                     response = parse_img(name, image_file_object.data)
