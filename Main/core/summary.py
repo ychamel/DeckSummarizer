@@ -200,6 +200,10 @@ def write_RSM(files: list[File]):
         "Strategy Analysis": "The strategy analysis of the company and how they plan to approach the market",
         "Final Recommendations and Analysis": "final recomendation and analysis for the company's market approach and their financials",
     }
+    topics2 = {
+        "Company Overview":"",
+
+    }
     # get input text
     input_txt = ""
     for file in files:
@@ -207,12 +211,12 @@ def write_RSM(files: list[File]):
             input_txt += doc.page_content + '\n'
     messages = [
         {"role": "system",
-         "content": "You are an excelent analyst that will be given a CIM document of a comapny, and you are tasked to write an RSM report that includes a comprehensive analysis of the financial health and potential of a company. \n"
-                    f"some key topics to cover are {topics.keys()} described as follows {topics}."
+         "content": "You are an excelent analyst that will be given a CIM document of a comapny, and you are tasked to write an RSM report that includes a comprehensive analysis of the financial health and potential of the company. \n"
+
          },
         {"role": "user", "content": f"here is the CIM document: \n {input_txt}"}
     ]
-
+    f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
         model="gpt-4-1106-preview",
         messages=messages
