@@ -84,6 +84,7 @@ def store_txt(files: list[File]):
     store_data(data, embed_model, index)
     return index
 
+
 def init_pinecone(dimension):
     pinecone.init(api_key=st.session_state.get('PINECONE_API_KEY'),
                   enviroment=st.session_state.get('PINECONE_ENVIRONMENT'))
@@ -187,3 +188,36 @@ def write_report(folder_index):
         out += write_analysis(topic, folder_index)
 
     return out
+
+def write_RSM(files: list[File]):
+    topics = {
+        "Company Overview": "The Company Overview, this includes Company Headcount, Number of Clients, Geography Presence, Number of Products, and Key Milestones and Figures ",
+        "Market Analysis": "The market analysis for the company and a detailed assessment of the business's target market and the competitive landscape within their specific industry",
+        "Products/Services Offering": "the products and/or services offering being sold by the company",
+        "Business Model": "The buisness model of the company",
+        "Pricing": "The company's pricing",
+        "Financial Analysis": "The Financial analysis of the company including the balance sheet, the income statement, and the cash flow statement and any given financial reports.",
+        "Strategy Analysis": "The strategy analysis of the company and how they plan to approach the market",
+        "Final Recommendations and Analysis": "final recomendation and analysis for the company's market approach and their financials",
+    }
+    # get input text
+    input_txt = ""
+    for file in files:
+        for doc in file.docs:
+            input_txt += doc.page_content + '\n'
+    messages = [
+        {"role": "system",
+         "content": "You are an excelent analyst that will be given a CIM document of a comapny, and you are tasked to write an RSM report that includes a comprehensive analysis of the financial health and potential of a company. \n"
+                    f"some key topics to cover are {topics.keys()} described as follows {topics}."
+         },
+        {"role": "user", "content": f"here is the CIM document: \n {input_txt}"}
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4-1106-preview",
+        messages=messages
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+    return answer

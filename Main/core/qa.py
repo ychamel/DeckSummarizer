@@ -49,7 +49,7 @@ def query_folder(
         prompt=STUFF_PROMPT,
     )
 
-    relevant_docs = folder_index.index.similarity_search(query, k=5)
+    relevant_docs = folder_index.index.similarity_search(query)
     result = chain(
         {"input_documents": relevant_docs, "question": query}, return_only_outputs=True
     )

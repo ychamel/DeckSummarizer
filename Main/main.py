@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 from Main.components.sidebar import sidebar
-from Main.core.summary import write_report, store_txt
+from Main.core.summary import write_report, store_txt, write_RSM
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -108,8 +108,9 @@ with st.expander("Advanced Options"):
 # generate summary
 if generate_summary:
     with st.spinner("Generating Report... This may take a while⏳"):
-        pinecone_index = store_txt(files)
-        result = write_report(pinecone_index)
+        #pinecone_index = store_txt(files)
+        #result = write_report(pinecone_index)
+        result = write_RSM(files)
     st.download_button("Download Report", result)
 
 # option to show raw read data
