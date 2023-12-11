@@ -1,4 +1,6 @@
 from typing import Any, List
+
+import openai
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from Main.core.prompts import STUFF_PROMPT
 from langchain.docstore.document import Document
@@ -49,7 +51,7 @@ def query_folder(
         prompt=STUFF_PROMPT,
     )
 
-    relevant_docs = folder_index.index.similarity_search(query, k=5)
+    relevant_docs = folder_index.index.similarity_search(query)
     result = chain(
         {"input_documents": relevant_docs, "question": query}, return_only_outputs=True
     )
@@ -75,3 +77,21 @@ def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
                 source_docs.append(doc)
 
     return source_docs
+
+def get_query_answer(query, summary):
+    messages = [
+        {"role": "system",
+         "content": "You are an answer generator for a search engine, you will be given a question and you will generate an answer that details the things that should be looked for in the text."
+                    f"The context is the following: {summary}"
+         },
+        {"role": "user", "content": f"question: {query}"}
+    ]
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+    return answer

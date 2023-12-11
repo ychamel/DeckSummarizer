@@ -2,6 +2,8 @@ from io import BytesIO
 from time import sleep
 from typing import List, Any, Optional
 import re
+
+import pandas as pd
 import streamlit as st
 from pypdf import PdfReader
 from pptx import Presentation
@@ -97,6 +99,7 @@ class PdfFile(File):
             docs.append(doc)
             # update progress
             parsing_bar.progress(i / size, "Parsing PDF")
+        parsing_bar.progress(1.0, "Parsing PDF")
         # retrieve images
         progress_text = "Decoding Images"
         # fetching responses
@@ -119,6 +122,7 @@ class PdfFile(File):
             # add timeout
             count += 1
             sleep(10)
+        parsing_bar.progress(1.0, "Decoding Images")
         # file.read() mutates the file object, which can affect caching
         # so we need to reset the file pointer to the beginning
         file.seek(0)
@@ -190,6 +194,19 @@ class TxtFile(File):
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
+class XLFile(File):
+    @classmethod
+    def from_bytes(cls, file: BytesIO) -> "XLFile":
+        dataframes = pd.read_excel(file, None)
+        docs = []
+        for title, dataframe in dataframes.items():
+            dataframe = strip_consecutive_newlines(dataframe.to_string())
+            file.seek(0)
+            doc = Document(page_content=dataframe.strip())
+            docs.append(doc)
+        return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
+
+
 class PPTFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "PPTFile":
@@ -221,5 +238,7 @@ def read_file(file: BytesIO) -> File:
         return TxtFile.from_bytes(file)
     elif file.name.lower().endswith(".pptx"):
         return PPTFile.from_bytes(file)
+    elif file.name.lower().endswith(".xlsx"):
+        return XLFile.from_bytes(file)
     else:
         raise NotImplementedError(f"File type {file.name.split('.')[-1]} not supported")

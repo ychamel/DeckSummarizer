@@ -28,6 +28,9 @@ def sidebar():
         api_key_input = None
         if password == os.environ.get("password"):
             api_key_input = os.environ.get("OPENAI_API_KEY", None)
+            st.session_state["PINECONE_API_KEY"] = os.environ.get("PINECONE_API_KEY", None)
+            st.session_state["PINECONE_ENVIRONMENT"] = os.environ.get("PINECONE_ENVIRONMENT", None)
+            st.session_state["PINECONE_INDEX"] = os.environ.get("PINECONE_INDEX", None)
 
         st.session_state["OCR_ENABLED"] = st.checkbox("OCR Enabled")
 
