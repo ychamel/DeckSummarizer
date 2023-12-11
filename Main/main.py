@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 
 from Main.components.sidebar import sidebar
+from Main.core.Analytics import set_data
 from Main.core.summary import write_report, store_txt, write_RSM, get_summary
 
 from Main.ui import (
@@ -164,6 +165,8 @@ if submit:
     # add answer
     st.session_state.get("messages").append({"role": "user", "content": query})
     st.session_state.get("messages").append({"role": "assistant", "content": result.answer})
+    # save to analytics
+    set_data(query, result.answer)
     with answer_col:
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
