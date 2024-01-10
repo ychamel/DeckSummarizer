@@ -13,7 +13,7 @@ def get_id():
 
 
 def set_data(query, answer):
-    url = "https://eu-west-2.aws.data.mongodb-api.com/app/data-iruhp/endpoint/data/v1/action/findOne"
+    url = "https://eu-west-2.aws.data.mongodb-api.com/app/data-iruhp/endpoint/data/v1/action/insertOne"
 
     payload = json.dumps({
         "collection": "Synapse",
@@ -32,4 +32,3 @@ def set_data(query, answer):
         'api-key': st.session_state.get("MONGODB_API_KEY"),
     }
     response = requests.request("POST", url, headers=headers, data=payload)
-    print(response)
