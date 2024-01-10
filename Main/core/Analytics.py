@@ -32,3 +32,4 @@ def set_data(query, answer):
         'api-key': st.session_state.get("MONGODB_API_KEY"),
     }
     response = requests.request("POST", url, headers=headers, data=payload)
+    print(response)
