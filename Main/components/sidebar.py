@@ -31,6 +31,7 @@ def sidebar():
             st.session_state["PINECONE_API_KEY"] = os.environ.get("PINECONE_API_KEY", None)
             st.session_state["PINECONE_ENVIRONMENT"] = os.environ.get("PINECONE_ENVIRONMENT", None)
             st.session_state["PINECONE_INDEX"] = os.environ.get("PINECONE_INDEX", None)
+            st.session_state["MONGODB_API_KEY"] = os.environ.get("MONGODB_API_KEY", None)
 
         st.session_state["OCR_ENABLED"] = st.checkbox("OCR Enabled")
 
