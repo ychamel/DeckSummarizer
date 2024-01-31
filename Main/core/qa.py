@@ -19,13 +19,13 @@ class AnswerWithSources(BaseModel):
 
 def text_analyse(text: str):
     substrings = []
-    start_index = text.find("{")
+    start_index = text.find("<<")
 
     while start_index != -1:
-        end_index = text.find("}", start_index + 1)
+        end_index = text.find(">>", start_index + 1)
         if end_index != -1:
             substrings.append([start_index + 1, end_index])
-        start_index = text.find("{", start_index + 1)
+        start_index = text.find("<<", start_index + 1)
 
     for substring in reversed(substrings):
         start = substring[0]
