@@ -19,13 +19,13 @@ class AnswerWithSources(BaseModel):
 
 def text_analyse(text: str):
     substrings = []
-    start_index = text.find("<<")
+    start_index = text.find("{")
 
     while start_index != -1:
-        end_index = text.find(">>", start_index + 1)
+        end_index = text.find("}", start_index + 1)
         if end_index != -1:
             substrings.append([start_index + 1, end_index])
-        start_index = text.find("<<", start_index + 1)
+        start_index = text.find("{", start_index + 1)
 
     for substring in reversed(substrings):
         start = substring[0]
@@ -101,6 +101,7 @@ def query_folder(
     return AnswerWithSources(answer=answer, sources=sources)
 
 
+
 def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
     """Retrieves the docs that were used to answer the question the generated answer."""
 
@@ -125,7 +126,7 @@ def get_query_answer(query, summary):
     ]
     # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4-0125-preview",
         messages=messages
     )
     answer = ""
