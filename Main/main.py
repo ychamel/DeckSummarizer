@@ -149,7 +149,7 @@ if submit:
         st.stop()
 
     # get updated query
-    search_query = query
+    search_query = query+ ' \n '
     if summary:
         search_query += get_query_answer(query, summary)
 
