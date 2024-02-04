@@ -56,12 +56,12 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-if (not uploaded_files and st.session_state.get("FILES", 0)) or not openai_api_key:
+files = st.session_state.get("FILES")
+if (not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
     st.stop()
 
 update_btn = st.button('Update Files')
 
-files = st.session_state.get("FILES")
 chunked_files = st.session_state.get("CHUNKED_FILES")
 folder_index = st.session_state.get("FOLDER_INDEX")
 summary = st.session_state.get("SUMMARY")
