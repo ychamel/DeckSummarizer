@@ -126,7 +126,7 @@ def get_query_answer(query, summary):
     ]
     # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0125",
+        model="gpt-3.5-turbo-1106",
         messages=messages
     )
     answer = ""
