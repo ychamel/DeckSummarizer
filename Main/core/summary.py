@@ -189,6 +189,7 @@ def write_report(folder_index):
 
     return out
 
+
 def write_RSM(files: list[File]):
     topics = {
         "Company Overview": "The Company Overview, this includes Company Headcount, Number of Clients, Geography Presence, Number of Products, and Key Milestones and Figures ",
@@ -201,7 +202,8 @@ def write_RSM(files: list[File]):
         "Final Recommendations and Analysis": "final recomendation and analysis for the company's market approach and their financials",
     }
     topics2 = [
-        "Company Overview","Business Overview", "Transaction Overview / Structure", "Investment Highlights","Investment Considerations",
+        "Company Overview", "Business Overview", "Transaction Overview / Structure", "Investment Highlights",
+        "Investment Considerations",
     ]
     # get input text
     input_txt = ""
@@ -216,9 +218,9 @@ def write_RSM(files: list[File]):
          },
         {"role": "user", "content": f"here is the CIM document: \n {input_txt}"}
     ]
-    #f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-4-1106-preview",
+        model="gpt-4-0125-preview",
         messages=messages
     )
     answer = ""
@@ -226,7 +228,8 @@ def write_RSM(files: list[File]):
         answer += choice.message.content
     return answer
 
-def get_summary(file:File):
+
+def get_summary(file: File):
     # get input text
     input_txt = ""
     for doc in file.docs:
@@ -239,7 +242,7 @@ def get_summary(file:File):
     ]
     # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4-0125-preview",
         messages=messages
     )
     answer = ""

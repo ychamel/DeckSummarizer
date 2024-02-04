@@ -126,10 +126,10 @@ def get_query_answer(query, summary):
     ]
     # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-4-0125-preview",
+        model="gpt-3.5-turbo-0125",
         messages=messages
     )
     answer = ""
     for choice in response.choices:
         answer += choice.message.content
-    return answer
+    return query+answer
