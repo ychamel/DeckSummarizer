@@ -151,8 +151,7 @@ if submit:
     search_query = query
     if summary:
         search_query += get_query_answer(query, summary)
-    # Output Columns
-    answer_col, sources_col = st.columns(2)
+
 
     result = query_folder(
         folder_index=folder_index,
@@ -167,6 +166,10 @@ if submit:
     st.session_state.get("messages").append({"role": "assistant", "content": result.answer})
     # save to analytics
     set_data(query, result.answer)
+
+if st.session_state.get("messages"):
+    # Output Columns
+    answer_col, sources_col = st.columns(2)
     with answer_col:
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
