@@ -132,4 +132,4 @@ def get_query_answer(query, summary):
     answer = ""
     for choice in response.choices:
         answer += choice.message.content
-    return query+answer
+    return answer
