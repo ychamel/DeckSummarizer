@@ -170,12 +170,22 @@ if st.session_state.get("messages"):
     with answer_col:
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
-            st.chat_message(msg["role"]).write(msg["content"])
+            message = f"""
+            ```basic
+            {msg["content"]}
+            ```
+            """
+            st.chat_message(msg["role"]).write(message)
         # st.markdown(result.answer)
 
     with sources_col:
         st.markdown("#### Sources")
         for source in st.session_state.get("results", []):
-            st.write(source.page_content)
+            message = f"""
+                        ```basic
+                        {source.page_content}
+                        ```
+                        """
+            st.write(message)
             st.markdown(source.metadata["source"])
             st.markdown("---")
