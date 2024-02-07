@@ -18,7 +18,7 @@ from Main.core.caching import bootstrap_caching
 from Main.core.parsing import read_file
 from Main.core.chunking import chunk_file
 from Main.core.embedding import embed_files
-from Main.core.qa import query_folder, get_query_answer
+from Main.core.qa import query_folder, get_query_answer, get_relevant_docs
 
 EMBEDDING = "openai"
 VECTOR_STORE = "faiss"
@@ -149,17 +149,13 @@ if submit:
         st.stop()
 
     # get updated query
-    search_query = query+ ' \n '
+    search_query = query + ' \n '
     if summary:
         search_query += get_query_answer(query, summary)
 
-    result = query_folder(
+    result = get_relevant_docs(
         folder_index=folder_index,
         query=search_query,
-        return_all=return_all_chunks,
-        model=MODEL,
-        openai_api_key=openai_api_key,
-        temperature=0,
     )
     # add answer
     st.session_state.get("messages").append({"role": "user", "content": query})

@@ -51,6 +51,32 @@ def Wolf_analyse(text: str):
     return answer
 
 
+def get_relevant_docs(query: str, folder_index: FolderIndex) -> AnswerWithSources:
+    relevant_docs = folder_index.index.similarity_search(query)
+
+    messages = [
+        {"role": "system",
+         "content": "Create a final answer to the given questions using the provided document excerpts(in no particular order) as references. \n"
+                    "for calculations return the equation between brackets instead of the calculated value. ex: question: 'what's 3 multiplied by 5?' answer: '{3*5}'"
+                    f"The context is the following: {relevant_docs}"
+         },
+        {"role": "user", "content": f"question: {query}"}
+    ]
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages,
+        temperature=0,
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+
+    answer = text_analyse(answer)
+    return AnswerWithSources(answer=answer, sources=relevant_docs)
+
+
+
 def query_folder(
         query: str,
         folder_index: FolderIndex,
@@ -99,7 +125,6 @@ def query_folder(
     answer = result["output_text"].split("SOURCES: ")[0]
     answer = text_analyse(answer)
     return AnswerWithSources(answer=answer, sources=sources)
-
 
 
 def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
