@@ -182,9 +182,9 @@ if st.session_state.get("messages"):
         st.markdown("#### Sources")
         for source in st.session_state.get("results", []):
             message = f"""
-                        ```basic
+                        
                         {source.page_content}
-                        ```
+                        
                         """
             st.text(message)
             st.markdown(source.metadata["source"])
