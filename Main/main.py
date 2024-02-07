@@ -56,12 +56,13 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-if not uploaded_files or not openai_api_key:
-    st.stop()
-
-update_btn = st.button('Update Files')
-
 files = st.session_state.get("FILES")
+if (not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
+    st.stop()
+update_btn = None
+if (uploaded_files):
+    update_btn = st.button('Update Files')
+
 chunked_files = st.session_state.get("CHUNKED_FILES")
 folder_index = st.session_state.get("FOLDER_INDEX")
 summary = st.session_state.get("SUMMARY")
@@ -148,11 +149,9 @@ if submit:
         st.stop()
 
     # get updated query
-    search_query = query
+    search_query = query+ ' \n '
     if summary:
         search_query += get_query_answer(query, summary)
-    # Output Columns
-    answer_col, sources_col = st.columns(2)
 
     result = query_folder(
         folder_index=folder_index,
@@ -165,8 +164,13 @@ if submit:
     # add answer
     st.session_state.get("messages").append({"role": "user", "content": query})
     st.session_state.get("messages").append({"role": "assistant", "content": result.answer})
+    st.session_state["results"] = result.sources
     # save to analytics
     set_data(query, result.answer)
+
+if st.session_state.get("messages"):
+    # Output Columns
+    answer_col, sources_col = st.columns(2)
     with answer_col:
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
@@ -175,7 +179,7 @@ if submit:
 
     with sources_col:
         st.markdown("#### Sources")
-        for source in result.sources:
+        for source in st.session_state.get("results", []):
             st.write(source.page_content)
             st.markdown(source.metadata["source"])
             st.markdown("---")
