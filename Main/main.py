@@ -175,7 +175,7 @@ if st.session_state.get("messages"):
             {msg["content"]}
             ```
             """
-            st.chat_message(msg["role"]).write(message)
+            st.chat_message(msg["role"]).text(message)
         # st.markdown(result.answer)
 
     with sources_col:
@@ -186,6 +186,6 @@ if st.session_state.get("messages"):
                         {source.page_content}
                         ```
                         """
-            st.write(message)
+            st.text(message)
             st.markdown(source.metadata["source"])
             st.markdown("---")
