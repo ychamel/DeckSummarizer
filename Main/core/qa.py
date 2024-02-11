@@ -41,18 +41,17 @@ def text_analyse(text: str):
 
 
 def Wolf_analyse(text: str):
-    print(f"wolfram: {text}")
     Wolf_client = Client(st.session_state.get("WOLFRAMALPHA_KEY", ""))
 
     res = Wolf_client.query(text)
 
     answer = next(res.results).text
 
-    return answer
+    return text+":"+answer
 
 
 def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) -> AnswerWithSources:
-    relevant_docs = folder_index.index.similarity_search(search_query, k=5)
+    relevant_docs = folder_index.index.similarity_search(search_query)
 
     messages = [
         {"role": "system",
@@ -144,8 +143,9 @@ def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
 def get_query_answer(query, summary):
     messages = [
         {"role": "system",
-         "content": "You are an answer generator for a search engine, you will be given a question and you will generate an answer that details the things that should be looked for in the text."
-                    f"The context is the following: {summary}"
+         "content": "You are an answer generator for a search engine, you will be given a question and you'll return a list of relevant keywords to look for. \n"
+                    "ex: Q: 'what is the net operational profit in 2022?', A: 'Buisness data, gross profit, operating expenses, net sales, revenue, cost of sales, etc.' "
+                    f"Context: {summary}"
          },
         {"role": "user", "content": f"question: {query}"}
     ]
