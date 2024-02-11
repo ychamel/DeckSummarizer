@@ -155,7 +155,8 @@ if submit:
 
     result = get_relevant_docs(
         folder_index=folder_index,
-        query=search_query,
+        query=query,
+        search_query=search_query,
     )
     # add answer
     st.session_state.get("messages").append({"role": "user", "content": query})

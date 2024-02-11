@@ -51,8 +51,8 @@ def Wolf_analyse(text: str):
     return answer
 
 
-def get_relevant_docs(query: str, folder_index: FolderIndex) -> AnswerWithSources:
-    relevant_docs = folder_index.index.similarity_search(query)
+def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) -> AnswerWithSources:
+    relevant_docs = folder_index.index.similarity_search(search_query)
 
     messages = [
         {"role": "system",
@@ -74,7 +74,6 @@ def get_relevant_docs(query: str, folder_index: FolderIndex) -> AnswerWithSource
 
     answer = text_analyse(answer)
     return AnswerWithSources(answer=answer, sources=relevant_docs)
-
 
 
 def query_folder(
