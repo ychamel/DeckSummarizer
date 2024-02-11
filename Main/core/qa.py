@@ -57,7 +57,7 @@ def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) 
     messages = [
         {"role": "system",
          "content": "Create a final answer to the given questions using the provided document excerpts(in no particular order) as references. \n"
-                    "for calculations return the equation between brackets instead of the calculated value. ex: question: 'what's 3 multiplied by 5?' answer: '{3*5}'"
+                    "for calculations return the equation between brackets which will be passed to a seperate api to do the calculation. ex: question: 'what's 3 multiplied by 5?' answer: '{3*5}'"
                     f"The context is the following: {relevant_docs}"
          },
         {"role": "user", "content": f"question: {query}"}
