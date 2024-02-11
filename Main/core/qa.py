@@ -52,7 +52,7 @@ def Wolf_analyse(text: str):
 
 
 def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) -> AnswerWithSources:
-    relevant_docs = folder_index.index.similarity_search(search_query)
+    relevant_docs = folder_index.index.max_marginal_relevance_search(search_query)
 
     messages = [
         {"role": "system",
