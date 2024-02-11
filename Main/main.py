@@ -171,9 +171,7 @@ if st.session_state.get("messages"):
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
             message = f"""
-            ```basic
             {msg["content"]}
-            ```
             """
             st.chat_message(msg["role"]).write(message)
         # st.markdown(result.answer)
