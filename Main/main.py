@@ -49,6 +49,7 @@ if not openai_api_key:
     )
 
 file_or_url = st.toggle("file/url", value=False)
+
 uploaded_files = None
 url = None
 if not file_or_url:
