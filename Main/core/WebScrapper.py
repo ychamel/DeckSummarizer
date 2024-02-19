@@ -15,7 +15,7 @@ class ContentSpider(CrawlSpider):
     rules = (
         Rule(LinkExtractor(allow=(), unique=True), callback='parse_item', follow=True),
     )
-
+    DICT = {}
     def __init__(self, url='', allowed_domains=[], DICT={}, *args, **kwargs):
         super(ContentSpider, self).__init__(*args, **kwargs)
         self.start_urls = [url]

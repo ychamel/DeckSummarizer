@@ -61,7 +61,7 @@ if not file_or_url:
         accept_multiple_files=True
     )
 else:
-    url = st.text_input("Enter The URL of the website you want to question:")
+    url = st.text_input("Enter The URL of the website you want to question:", help="ex:'https://www.website.com/'")
 
 files = st.session_state.get("FILES")
 # wait for input
@@ -89,9 +89,10 @@ if update_btn:
             except Exception as e:
                 display_file_read_error(e)
     else:
-        # scrape url and turn it into file objects
-        url_files = scrape_url(url)
-        files.extend(url_files)
+        with st.spinner("Scraping the web for url content... This may take a while⏳"):
+            # scrape url and turn it into file objects
+            url_files = scrape_url(url)
+            files.extend(url_files)
     st.session_state["FILES"] = files
 
     # chunk files
