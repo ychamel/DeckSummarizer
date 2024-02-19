@@ -89,10 +89,12 @@ if update_btn:
             except Exception as e:
                 display_file_read_error(e)
     else:
-        with st.spinner("Scraping the web for url content... This may take a while⏳"):
-            # scrape url and turn it into file objects
-            url_files = scrape_url(url)
-            files.extend(url_files)
+        progress_text = "Scraping the web... This may take a while⏳"
+        my_bar = st.progress(0, text=progress_text)
+        # scrape url and turn it into file objects
+        url_files = scrape_url(url)
+        files.extend(url_files)
+        my_bar.progress(100, text=progress_text)
     st.session_state["FILES"] = files
 
     # chunk files
