@@ -15,7 +15,7 @@ from Main.ui import (
 
 from Main.core.caching import bootstrap_caching
 
-from Main.core.parsing import read_file
+from Main.core.parsing import read_file, scrape_url
 from Main.core.chunking import chunk_file
 from Main.core.embedding import embed_files
 from Main.core.qa import query_folder, get_query_answer, get_relevant_docs
@@ -48,16 +48,23 @@ if not openai_api_key:
         "please enter a password to access the app!"
     )
 
-# uploader
-uploaded_files = st.file_uploader(
-    "Upload file of the following format: pdf, docx, pptx, xlsx or txt",
-    type=["pdf", "docx", "txt", "pptx", "xlsx"],
-    help="Scanned documents are not supported yet!",
-    accept_multiple_files=True
-)
+file_or_url = st.toggle("file/url", value=False)
+uploaded_files = None
+url = None
+if not file_or_url:
+    # uploader
+    uploaded_files = st.file_uploader(
+        "Upload file of the following format: pdf, docx, pptx, xlsx or txt",
+        type=["pdf", "docx", "txt", "pptx", "xlsx"],
+        help="Scanned documents are not supported yet!",
+        accept_multiple_files=True
+    )
+else:
+    url = st.text_input("Enter The URL of the website you want to question:")
 
 files = st.session_state.get("FILES")
-if (not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
+# wait for input
+if (not url and not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
     st.stop()
 update_btn = None
 if (uploaded_files):
@@ -69,14 +76,21 @@ summary = st.session_state.get("SUMMARY")
 
 # read files
 if update_btn:
-    # turn uploaded files into file objects
+
     files = []
-    for uploaded_file in uploaded_files:
-        try:
-            file = read_file(uploaded_file)
-            files.append(file)
-        except Exception as e:
-            display_file_read_error(e)
+    # check file or url
+    if not file_or_url:
+        # turn uploaded files into file objects
+        for uploaded_file in uploaded_files:
+            try:
+                file = read_file(uploaded_file)
+                files.append(file)
+            except Exception as e:
+                display_file_read_error(e)
+    else:
+        # scrape url and turn it into file objects
+        url_files = scrape_url(url)
+        files.extend(url_files)
     st.session_state["FILES"] = files
 
     # chunk files

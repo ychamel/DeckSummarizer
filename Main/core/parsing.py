@@ -1,3 +1,4 @@
+import uuid
 from io import BytesIO
 from time import sleep
 from typing import List, Any, Optional
@@ -17,6 +18,7 @@ from abc import abstractmethod, ABC
 from copy import deepcopy
 
 from Main.core.PDF_Parser import parse_img, fetch_text
+from Main.core.WebScrapper import ScrapWeb
 
 
 class File(ABC):
@@ -37,6 +39,11 @@ class File(ABC):
     @classmethod
     @abstractmethod
     def from_bytes(cls, file: BytesIO) -> "File":
+        """Creates a File from a BytesIO object"""
+
+    @classmethod
+    @abstractmethod
+    def from_url(cls, url: str) -> "File":
         """Creates a File from a BytesIO object"""
 
     def __repr__(self) -> str:
@@ -242,3 +249,15 @@ def read_file(file: BytesIO) -> File:
         return XLFile.from_bytes(file)
     else:
         raise NotImplementedError(f"File type {file.name.split('.')[-1]} not supported")
+
+
+def scrape_url(url: str) -> List[File]:
+    # scrape url
+    DICT = ScrapWeb(url)
+    # return into files
+    files = []
+    for web_url, web_content in DICT.items():
+        doc = Document(page_content=web_content)
+        file = File(name=url, id=str(uuid.UUID.hex), docs=[doc])
+        files.append(file)
+    return files
