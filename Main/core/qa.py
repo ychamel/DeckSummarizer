@@ -41,14 +41,39 @@ def text_analyse(text: str):
 
 
 def Wolf_analyse(text: str):
-    print(f"wolfram: {text}")
     Wolf_client = Client(st.session_state.get("WOLFRAMALPHA_KEY", ""))
 
     res = Wolf_client.query(text)
 
     answer = next(res.results).text
 
-    return answer
+    return text+":"+answer
+
+
+def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) -> AnswerWithSources:
+    relevant_docs = folder_index.index.similarity_search(search_query)
+
+    messages = [
+        {"role": "system",
+         "content": "Create a final answer to the given questions using the provided document excerpts(in no particular order) as references. \n"
+                    "for calculations return the equation between brackets which will be passed to a seperate api to do the calculation. \n"
+                    "ex: info: 'curr period val=1000, last period val=2000' question: 'what's the year on year growth?' answer: '{(1000-2000)/2000*100}'"
+                    f"The context is the following: {relevant_docs}"
+         },
+        {"role": "user", "content": f"question: {query}"}
+    ]
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages,
+        temperature=0,
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+
+    answer = text_analyse(answer)
+    return AnswerWithSources(answer=answer, sources=relevant_docs)
 
 
 def query_folder(
@@ -101,7 +126,6 @@ def query_folder(
     return AnswerWithSources(answer=answer, sources=sources)
 
 
-
 def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
     """Retrieves the docs that were used to answer the question the generated answer."""
 
@@ -119,8 +143,9 @@ def get_sources(answer: str, folder_index: FolderIndex) -> List[Document]:
 def get_query_answer(query, summary):
     messages = [
         {"role": "system",
-         "content": "You are an answer generator for a search engine, you will be given a question and you will generate an answer that details the things that should be looked for in the text."
-                    f"The context is the following: {summary}"
+         "content": "You are an answer generator for a search engine, you will be given a question and you'll return a list of relevant keywords to look for. \n"
+                    "ex: Q: 'what is the net operational profit in 2022?', A: 'Buisness data, gross profit, operating expenses, net sales, revenue, cost of sales, etc.' "
+                    f"Context: {summary}"
          },
         {"role": "user", "content": f"question: {query}"}
     ]

@@ -18,7 +18,7 @@ from Main.core.caching import bootstrap_caching
 from Main.core.parsing import read_file
 from Main.core.chunking import chunk_file
 from Main.core.embedding import embed_files
-from Main.core.qa import query_folder, get_query_answer
+from Main.core.qa import query_folder, get_query_answer, get_relevant_docs
 
 EMBEDDING = "openai"
 VECTOR_STORE = "faiss"
@@ -149,17 +149,14 @@ if submit:
         st.stop()
 
     # get updated query
-    search_query = query+ ' \n '
+    search_query = query + ' \n '
     if summary:
         search_query += get_query_answer(query, summary)
 
-    result = query_folder(
+    result = get_relevant_docs(
         folder_index=folder_index,
-        query=search_query,
-        return_all=return_all_chunks,
-        model=MODEL,
-        openai_api_key=openai_api_key,
-        temperature=0,
+        query=query,
+        search_query=search_query,
     )
     # add answer
     st.session_state.get("messages").append({"role": "user", "content": query})
@@ -174,12 +171,18 @@ if st.session_state.get("messages"):
     with answer_col:
         st.markdown("#### Answer")
         for msg in reversed(st.session_state.get("messages")):
-            st.chat_message(msg["role"]).write(msg["content"])
+            message = f"""
+            {msg["content"]}
+            """
+            st.chat_message(msg["role"]).write(message)
         # st.markdown(result.answer)
 
     with sources_col:
         st.markdown("#### Sources")
         for source in st.session_state.get("results", []):
-            st.write(source.page_content)
+            message = f"""
+                        {source.page_content}
+                        """
+            st.write(message)
             st.markdown(source.metadata["source"])
             st.markdown("---")
