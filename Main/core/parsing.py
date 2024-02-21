@@ -37,15 +37,13 @@ class File(ABC):
         self.docs = docs or []
 
     @classmethod
-    @abstractmethod
     def from_bytes(cls, file: BytesIO) -> "File":
         """Creates a File from a BytesIO object"""
-
+        return None
     @classmethod
-    @abstractmethod
     def from_url(cls, url: str) -> "File":
         """Creates a File from a BytesIO object"""
-
+        return None
     def __repr__(self) -> str:
         return (
             f"File(name={self.name}, id={self.id},"
