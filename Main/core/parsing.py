@@ -18,7 +18,7 @@ from abc import abstractmethod, ABC
 from copy import deepcopy
 
 from Main.core.PDF_Parser import parse_img, fetch_text
-from Main.core.WebScrapper import ScrapWeb
+from Main.core.WebScrapper import run_spider
 
 
 class File(ABC):
@@ -253,7 +253,7 @@ def read_file(file: BytesIO) -> File:
 
 def scrape_url(url: str) -> List[File]:
     # scrape url
-    DICT = ScrapWeb(url)
+    DICT = run_spider(url)
     # return into files
     files = []
     for web_url, web_content in DICT.items():
