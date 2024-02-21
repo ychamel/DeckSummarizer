@@ -57,7 +57,8 @@ def run_spider(url):
             reactor.run()
             q.put(spider.DICT)
         except Exception as e:
-            q.put(None)
+            print(f"Error {e}")
+            q.put({})
 
     q = Queue()
     p = Process(target=f, args=(q,))
