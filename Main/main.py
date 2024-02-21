@@ -202,5 +202,5 @@ if st.session_state.get("messages"):
                         {source.page_content}
                         """
             st.write(message)
-            st.markdown(source.metadata["source"])
+            st.markdown(source.metadata["source_name"]+":"+source.metadata["source"])
             st.markdown("---")

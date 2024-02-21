@@ -34,16 +34,19 @@ class File(ABC):
         self.name = name
         self.id = id
         self.metadata = metadata or {}
+        self.metadata["source_name"] = name
         self.docs = docs or []
 
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "File":
         """Creates a File from a BytesIO object"""
         return None
+
     @classmethod
     def from_url(cls, url: str) -> "File":
         """Creates a File from a BytesIO object"""
         return None
+
     def __repr__(self) -> str:
         return (
             f"File(name={self.name}, id={self.id},"
