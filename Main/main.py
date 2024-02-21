@@ -122,9 +122,11 @@ if update_btn:
 elif not files:
     st.stop()
 
+
 for file in files:
     if not is_file_valid(file):
-        st.stop()
+        pass
+        # st.stop()
 
 if not is_open_ai_key_valid(openai_api_key):
     st.stop()
