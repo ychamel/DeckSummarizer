@@ -30,8 +30,8 @@ def is_file_valid(file: File) -> bool:
         len(file.docs) == 0
         or "".join([doc.page_content for doc in file.docs]).strip() == ""
     ):
-        st.error("Cannot read document! Make sure the document has selectable text")
-        logger.error(f"Cannot read document: {file.name}")
+        st.error(f"Cannot read document: {file.name}! Make sure the document has selectable text")
+        logger.error("Cannot read document")
         return False
     return True
 
