@@ -258,6 +258,6 @@ def scrape_url(url: str) -> List[File]:
     files = []
     for web_url, web_content in DICT.items():
         doc = Document(page_content=web_content)
-        file = File(name=url, id=str(uuid.UUID.hex), docs=[doc])
+        file = File(name=web_url, id=str(uuid.uuid4()), docs=[doc])
         files.append(file)
     return files
