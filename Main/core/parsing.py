@@ -40,12 +40,10 @@ class File(ABC):
     def from_bytes(cls, file: BytesIO) -> "File":
         """Creates a File from a BytesIO object"""
         return None
-
     @classmethod
     def from_url(cls, url: str) -> "File":
         """Creates a File from a BytesIO object"""
         return None
-
     def __repr__(self) -> str:
         return (
             f"File(name={self.name}, id={self.id},"
@@ -78,7 +76,6 @@ class DocxFile(File):
         text = docx2txt.process(file)
         text = strip_consecutive_newlines(text)
         doc = Document(page_content=text.strip())
-        doc.metadata["source_name"] = file.name
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
@@ -103,7 +100,6 @@ class PdfFile(File):
                         uuids[response['uid']] = len(docs)
                     sleep(5)
             doc = Document(page_content=text.strip())
-            doc.metadata["source_name"] = file.name
             doc.metadata["page"] = i + 1
             docs.append(doc)
             # update progress
@@ -161,7 +157,6 @@ class PdfFile2(File):
                         uuids[response['uid']] = len(docs)
                     sleep(5)
             doc = Document(page_content=text.strip())
-            doc.metadata["source_name"] = file.name
             doc.metadata["page"] = i + 1
             docs.append(doc)
             # update progress
@@ -201,7 +196,6 @@ class TxtFile(File):
         text = strip_consecutive_newlines(text)
         file.seek(0)
         doc = Document(page_content=text.strip())
-        doc.metadata["source_name"] = file.name
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=[doc])
 
 
@@ -214,7 +208,6 @@ class XLFile(File):
             dataframe = strip_consecutive_newlines(dataframe.to_string())
             file.seek(0)
             doc = Document(page_content=dataframe.strip())
-            doc.metadata["source_name"] = file.name
             docs.append(doc)
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
@@ -234,7 +227,6 @@ class PPTFile(File):
                 for paragraph in shape.text_frame.paragraphs:
                     for run in paragraph.runs:
                         doc = Document(page_content=run.text.strip())
-                        doc.metadata["source_name"] = file.name
                         doc.metadata["page"] = i + 1
                         docs.append(doc)
         file.seek(0)
@@ -264,7 +256,6 @@ def scrape_url(url: str) -> List[File]:
     files = []
     for web_url, web_content in DICT.items():
         doc = Document(page_content=web_content)
-        doc.metadata["source_name"] = web_url
         file = File(name=web_url, id=str(uuid.uuid4()), docs=[doc])
         files.append(file)
     return files
