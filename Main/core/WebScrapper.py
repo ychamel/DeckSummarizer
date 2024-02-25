@@ -24,7 +24,7 @@ class ContentSpider(CrawlSpider):
         url_name = response.url
         html = response.body
         soup = BeautifulSoup(html, "html.parser")
-        self.DICT[url_name] = soup.get_text().strip()
+        self.DICT[url_name] = soup.find("main").get_text().strip()
 
 
 def ScrapWeb(url: str):
