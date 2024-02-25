@@ -26,7 +26,10 @@ class ContentSpider(CrawlSpider):
         url_name = response.url
         html = response.body
         soup = BeautifulSoup(html, "html.parser")
-        self.DICT[url_name] = soup.find("main").get_text().strip()
+        try:
+            self.DICT[url_name] = soup.find("main").get_text().strip()
+        except:
+            pass
         if "Header" not in self.DICT:
             try:
                 self.DICT["Header"] = soup.find("header").get_text().strip()
