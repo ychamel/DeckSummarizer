@@ -26,20 +26,27 @@ class ContentSpider(CrawlSpider):
         url_name = response.url
         html = response.body
         soup = BeautifulSoup(html, "html.parser")
-        try:
-            self.DICT[url_name] = soup.find("main").get_text().strip()
-        except:
-            pass
-        if "Header" not in self.DICT:
+
+        if "MainPage" not in self.DICT:
             try:
-                self.DICT["Header"] = soup.find("header").get_text().strip()
+                self.DICT["MainPage"] = soup.get_text().strip()
             except:
                 pass
-        if "Footer" not in self.DICT:
+        else:
             try:
-                self.DICT["Footer"] = soup.find("footer").get_text().strip()
+                self.DICT[url_name] = soup.find("main").get_text().strip()
             except:
                 pass
+        # if "Header" not in self.DICT:
+        #     try:
+        #         self.DICT["Header"] = soup.find("header").get_text().strip()
+        #     except:
+        #         pass
+        # if "Footer" not in self.DICT:
+        #     try:
+        #         self.DICT["Footer"] = soup.find("footer").get_text().strip()
+        #     except:
+        #         pass
 
 
 def ScrapWeb(url: str):
