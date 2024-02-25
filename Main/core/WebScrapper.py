@@ -11,6 +11,7 @@ from twisted.internet import reactor
 
 
 class ContentSpider(CrawlSpider):
+    custom_settings = {"CLOSESPIDER_PAGECOUNT": 500}
     name = "content_spider"
     rules = (
         Rule(LinkExtractor(allow=(), unique=True), callback='parse_item', follow=True),
