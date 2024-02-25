@@ -9,12 +9,14 @@ from multiprocessing import Process, Queue
 
 from twisted.internet import reactor
 
+
 class ContentSpider(CrawlSpider):
     name = "content_spider"
     rules = (
         Rule(LinkExtractor(allow=(), unique=True), callback='parse_item', follow=True),
     )
     DICT = {}
+
     def __init__(self, url='', allowed_domains=[], *args, **kwargs):
         super(ContentSpider, self).__init__(*args, **kwargs)
         self.start_urls = [url]
@@ -25,6 +27,16 @@ class ContentSpider(CrawlSpider):
         html = response.body
         soup = BeautifulSoup(html, "html.parser")
         self.DICT[url_name] = soup.find("main").get_text().strip()
+        if "Header" not in self.DICT:
+            try:
+                self.DICT["Header"] = soup.find("header").get_text().strip()
+            except:
+                pass
+        if "Footer" not in self.DICT:
+            try:
+                self.DICT["Footer"] = soup.find("footer").get_text().strip()
+            except:
+                pass
 
 
 def ScrapWeb(url: str):
@@ -39,6 +51,7 @@ def ScrapWeb(url: str):
     process.start()
     process.join()
     return ContentSpider.DICT
+
 
 def run_spider(url):
     spider = ContentSpider
