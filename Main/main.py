@@ -3,7 +3,7 @@ from PIL import Image
 
 from Main.components.sidebar import sidebar
 from Main.core.Analytics import set_data
-from Main.core.summary import write_report, store_txt, write_RSM, get_summary
+from Main.core.summary import write_report, store_txt, write_RSM, get_summary, website_summary
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -147,7 +147,10 @@ if generate_summary:
     with st.spinner("Generating Report... This may take a while⏳"):
         # pinecone_index = store_txt(files)
         # result = write_report(pinecone_index)
-        result = write_RSM(files)
+        if file_or_url:
+            result = write_RSM(files)
+        else:
+            result = website_summary()
     st.download_button("Download Report", result)
 
 # option to show raw read data
