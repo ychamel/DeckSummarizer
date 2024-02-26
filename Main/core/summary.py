@@ -282,7 +282,7 @@ def website_summary(folder_index):
     response = openai.ChatCompletion.create(
         model="gpt-4-0125-preview",
         messages=messages,
-        max_tokens=20000
+        max_tokens=4000
 
     )
     answer = ""
