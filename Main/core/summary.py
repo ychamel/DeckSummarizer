@@ -261,9 +261,9 @@ def website_summary(folder_index):
     # filter redundant data
     Docs = {}
     for topic in Topics:
-        relevant_docs = folder_index.index.similarity_search(topic, k=2)
+        relevant_docs = folder_index.index.similarity_search(topic, k=3)
         for doc in relevant_docs:
-            id = doc.metadata["id"] + ":" + doc.metadata["source"]
+            id = doc.metadata.get("file_id") + ":" + doc.metadata.get("source")
             if id not in Docs:
                 Docs[id] = doc
 
