@@ -147,10 +147,10 @@ if generate_summary:
     with st.spinner("Generating Report... This may take a while⏳"):
         # pinecone_index = store_txt(files)
         # result = write_report(pinecone_index)
-        if file_or_url:
+        if not file_or_url:
             result = write_RSM(files)
         else:
-            result = website_summary()
+            result = website_summary(st.session_state.get("FOLDER_INDEX"))
     st.download_button("Download Report", result)
 
 # option to show raw read data
