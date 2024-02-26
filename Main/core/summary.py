@@ -261,7 +261,7 @@ def website_summary(folder_index):
     # filter redundant data
     Docs = {}
     for topic in Topics:
-        relevant_docs = folder_index.index.similarity_search(topic)
+        relevant_docs = folder_index.index.similarity_search(topic, k=2)
         for doc in relevant_docs:
             id = doc.metadata["id"] + ":" + doc.metadata["source"]
             if id not in Docs:
@@ -282,7 +282,7 @@ def website_summary(folder_index):
     response = openai.ChatCompletion.create(
         model="gpt-4-0125-preview",
         messages=messages,
-        max_tokens=30000
+        max_tokens=20000
 
     )
     answer = ""
