@@ -56,8 +56,8 @@ def get_relevant_docs(query: str, search_query: str, folder_index: FolderIndex) 
     messages = [
         {"role": "system",
          "content": "Create a final answer to the given questions using the provided document excerpts(in no particular order) as references. \n"
-                    "for calculations return the equation between brackets which will be passed to a seperate api to do the calculation. \n"
-                    "ex: info: 'curr period val=1000, last period val=2000' question: 'what's the year on year growth?' answer: '{(1000-2000)/2000*100}'"
+                    #"for calculations return the equation between brackets which will be passed to a seperate api to do the calculation. \n"
+                    #"ex: info: 'curr period val=1000, last period val=2000' question: 'what's the year on year growth?' answer: '{(1000-2000)/2000*100}'"
                     f"The context is the following: {relevant_docs}"
          },
         {"role": "user", "content": f"question: {query}"}

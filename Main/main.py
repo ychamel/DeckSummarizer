@@ -3,7 +3,7 @@ from PIL import Image
 
 from Main.components.sidebar import sidebar
 from Main.core.Analytics import set_data
-from Main.core.summary import write_report, store_txt, write_RSM, get_summary
+from Main.core.summary import write_report, store_txt, write_RSM, get_summary, website_summary
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -15,7 +15,7 @@ from Main.ui import (
 
 from Main.core.caching import bootstrap_caching
 
-from Main.core.parsing import read_file
+from Main.core.parsing import read_file, scrape_url
 from Main.core.chunking import chunk_file
 from Main.core.embedding import embed_files
 from Main.core.qa import query_folder, get_query_answer, get_relevant_docs
@@ -48,19 +48,27 @@ if not openai_api_key:
         "please enter a password to access the app!"
     )
 
-# uploader
-uploaded_files = st.file_uploader(
-    "Upload file of the following format: pdf, docx, pptx, xlsx or txt",
-    type=["pdf", "docx", "txt", "pptx", "xlsx"],
-    help="Scanned documents are not supported yet!",
-    accept_multiple_files=True
-)
+file_or_url = st.toggle("file/url", value=False)
+
+uploaded_files = None
+url = None
+if not file_or_url:
+    # uploader
+    uploaded_files = st.file_uploader(
+        "Upload file of the following format: pdf, docx, pptx, xlsx or txt",
+        type=["pdf", "docx", "txt", "pptx", "xlsx"],
+        help="Scanned documents are not supported yet!",
+        accept_multiple_files=True
+    )
+else:
+    url = st.text_input("Enter The URL of the website you want to question:", help="ex:'https://www.website.com/'")
 
 files = st.session_state.get("FILES")
-if (not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
+# wait for input
+if (not url and not uploaded_files and st.session_state.get("FILES", None) == None) or not openai_api_key:
     st.stop()
 update_btn = None
-if (uploaded_files):
+if (uploaded_files or url):
     update_btn = st.button('Update Files')
 
 chunked_files = st.session_state.get("CHUNKED_FILES")
@@ -69,14 +77,24 @@ summary = st.session_state.get("SUMMARY")
 
 # read files
 if update_btn:
-    # turn uploaded files into file objects
+
     files = []
-    for uploaded_file in uploaded_files:
-        try:
-            file = read_file(uploaded_file)
-            files.append(file)
-        except Exception as e:
-            display_file_read_error(e)
+    # check file or url
+    if not file_or_url:
+        # turn uploaded files into file objects
+        for uploaded_file in uploaded_files:
+            try:
+                file = read_file(uploaded_file)
+                files.append(file)
+            except Exception as e:
+                display_file_read_error(e)
+    else:
+        progress_text = "Scraping the web... This may take a while⏳"
+        my_bar = st.progress(0, text=progress_text)
+        # scrape url and turn it into file objects
+        url_files = scrape_url(url)
+        files.extend(url_files)
+        my_bar.progress(100, text=progress_text)
     st.session_state["FILES"] = files
 
     # chunk files
@@ -104,9 +122,11 @@ if update_btn:
 elif not files:
     st.stop()
 
+
 for file in files:
     if not is_file_valid(file):
-        st.stop()
+        pass
+        # st.stop()
 
 if not is_open_ai_key_valid(openai_api_key):
     st.stop()
@@ -127,7 +147,10 @@ if generate_summary:
     with st.spinner("Generating Report... This may take a while⏳"):
         # pinecone_index = store_txt(files)
         # result = write_report(pinecone_index)
-        result = write_RSM(files)
+        if not file_or_url:
+            result = write_RSM(files)
+        else:
+            result = website_summary(st.session_state.get("FOLDER_INDEX"))
     st.download_button("Download Report", result)
 
 # option to show raw read data
@@ -184,5 +207,5 @@ if st.session_state.get("messages"):
                         {source.page_content}
                         """
             st.write(message)
-            st.markdown(source.metadata["source"])
+            st.markdown(source.metadata["file_name"]+" : "+source.metadata["source"])
             st.markdown("---")

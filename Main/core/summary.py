@@ -6,7 +6,7 @@ import tiktoken
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from Main.core.parsing import File
-from Main.core.qa import query_folder
+from Main.core.qa import query_folder, get_relevant_docs
 import streamlit as st
 
 
@@ -244,6 +244,46 @@ def get_summary(file: File):
     response = openai.ChatCompletion.create(
         model="gpt-4-0125-preview",
         messages=messages
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+    return answer
+
+
+def website_summary(folder_index):
+    # for each keyword fetch data
+    Topics = ["company profile, mission, values", "Products and Services", "Management Team",
+              "Financial Reports and Investor Relations", "Clientele and Partenerships",
+              "News and Press Release", "Contact Information", "Legal and Regulatory Compliance", "Social Media Links",
+              "Client Testimonials", "Awards and Accolades", "Industry Affiliations", "CSR initiatives", "Job Openings",
+              "Events and Conferences"]
+    # filter redundant data
+    Docs = {}
+    for topic in Topics:
+        relevant_docs = folder_index.index.similarity_search(topic, k=3)
+        for doc in relevant_docs:
+            id = doc.metadata.get("file_id") + ":" + doc.metadata.get("source")
+            if id not in Docs:
+                Docs[id] = doc
+
+    # given all the data generate a summary
+    # get input text
+    input_txt = ""
+    for doc in Docs.values():
+        input_txt += doc.page_content + '\n'
+    messages = [
+        {"role": "system",
+         "content": f"You are a text summariser that takes a website parsed data and return a detailed summary covering the following topics {Topics}."
+         },
+        {"role": "user", "content": input_txt}
+    ]
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    response = openai.ChatCompletion.create(
+        model="gpt-4-0125-preview",
+        messages=messages,
+        max_tokens=4000
+
     )
     answer = ""
     for choice in response.choices:
