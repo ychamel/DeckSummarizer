@@ -1,9 +1,10 @@
 import streamlit as st
 from PIL import Image
+import pandas as pd
 
 from Main.components.sidebar import sidebar
 from Main.core.Analytics import set_data
-from Main.core.summary import write_report, store_txt, write_RSM, get_summary, website_summary
+from Main.core.summary import write_report, store_txt, write_RSM, get_summary, website_summary, get_ratio_analysis
 
 from Main.ui import (
     wrap_doc_in_html,
@@ -122,7 +123,6 @@ if update_btn:
 elif not files:
     st.stop()
 
-
 for file in files:
     if not is_file_valid(file):
         pass
@@ -141,6 +141,7 @@ with st.expander("Advanced Options"):
     return_all_chunks = st.checkbox("Show all chunks retrieved from vector search")
     show_full_doc = st.checkbox("Show parsed contents of the document")
     generate_summary = st.button("Generate Summary")
+    generate_excel = st.button("Generate Excel")
 
 # generate summary
 if generate_summary:
@@ -152,6 +153,26 @@ if generate_summary:
         else:
             result = website_summary(st.session_state.get("FOLDER_INDEX"))
     st.download_button("Download Report", result)
+
+# generate excel
+if generate_excel:
+    @st.experimental_memo
+    def convert_df(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+
+    with st.spinner("Generating Report... This may take a while⏳"):
+        result = get_ratio_analysis(st.session_state.get("FOLDER_INDEX"))
+        # Json to DataFrame
+        df = pd.json_normalize(result)
+        csv = convert_df(df)
+    st.download_button(
+        "Press to Download",
+        csv,
+        "Ratio_Analysis.csv",
+        "text/csv",
+        key='download-csv'
+    )
 
 # option to show raw read data
 if show_full_doc:
@@ -207,5 +228,5 @@ if st.session_state.get("messages"):
                         {source.page_content}
                         """
             st.write(message)
-            st.markdown(source.metadata["file_name"]+" : "+source.metadata["source"])
+            st.markdown(source.metadata["file_name"] + " : " + source.metadata["source"])
             st.markdown("---")

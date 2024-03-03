@@ -1,3 +1,4 @@
+import json
 import os
 import pinecone
 import openai
@@ -289,3 +290,99 @@ def website_summary(folder_index):
     for choice in response.choices:
         answer += choice.message.content
     return answer
+
+
+def get_ratio_analysis(folder_index):
+    data_sheet = {
+        "Income Statement": {
+            "Revenue": 0,
+            "Cost of Goods Sold": 0,
+            "Interest Expense": 0,
+            "Tax Expense": 0,
+            "Income from Cont Operations": 0,
+            "Net Income": 0
+        },
+        "Balance Sheet": {
+            "Cash": 0,
+            "Short Term Investments": 0,
+            "Accounts Receivable": 0,
+            "Inventory": 0,
+            "Current Assets": 0,
+            "Long Term Investments": 0,
+            "Net Fixed Assets": 0,
+            "Other Assets": 0,
+            "Total Assets": 0,
+            "Current Liabilities": 0,
+            "Total Liabilities": 0,
+            "Total Stockholders' Equity": 0,
+        },
+        "Cash Flow": {
+            "Cash Flow from Operations": 0,
+            "Dividends Paid": 0,
+            "Interest Paid": 0,
+        },
+        "Share Information ": {
+            "Market Price at Year End": 0,
+            "Earnings Per Share - Basic": 0,
+            "Shares Outstanding": 0,
+        }
+    }
+    ratio_sheet = {
+        "Growth Ratios": {
+            "Sales Growth": 0,
+            "Income Growth": 0,
+            "Asset Growth": 0,
+        },
+        "Profitability Ratios": {
+            "Profit Margin": 0,
+            "Return on Assets": 0,
+            "Return on Equity": 0,
+            "Dividend Payout Ratio": 0,
+            "Price Earnings Ratio": 0,
+        },
+        "Activity Ratios": {
+            "Receivable Turnover": 0,
+            "Inventory Turnover": 0,
+            "Fixed Asset Turnover": 0,
+        },
+        "Liquidity Ratios": {
+            "Current Ratio": 0,
+            "Quick Ratio": 0,
+        },
+        "Solvency Ratios": {
+            "Debt to Total Assets": 0
+        },
+        "Year": ""
+    }
+    # extract data related to these ratios
+    Docs = {}
+    for id, val in data_sheet.items():
+        topic = f"{id} : {val.keys()}"
+        relevant_docs = folder_index.index.similarity_search(topic, k=4)
+        for doc in relevant_docs:
+            id = doc.metadata.get("file_id") + ":" + doc.metadata.get("source")
+            if id not in Docs:
+                Docs[id] = doc
+    # fill values
+    # get input text
+    input_txt = ""
+    for doc in Docs.values():
+        input_txt += doc.page_content + '\n'
+    messages = [
+        {"role": "system",
+         "content": f"You are a professional accountant that's tasked to extract data from the given text and return it in the following json format {json.dumps(ratio_sheet)}"
+         },
+        {"role": "user", "content": input_txt}
+    ]
+    # f"some key topics to cover are {topics.keys()} described as follows {topics}."
+    response = openai.ChatCompletion.create(
+        model="gpt-4-0125-preview",
+        messages=messages,
+        max_tokens=4000
+
+    )
+    answer = ""
+    for choice in response.choices:
+        answer += choice.message.content
+    return json.loads(answer)
+    # generate ratios
