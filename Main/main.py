@@ -140,7 +140,7 @@ with st.form(key="qa_form"):
 with st.expander("Advanced Options"):
     return_all_chunks = st.checkbox("Show all chunks retrieved from vector search")
     show_full_doc = st.checkbox("Show parsed contents of the document")
-    generate_excel = st.button("Generate Excel")
+    generate_excel = st.button("Generate Ratio Analysis")
     generate_summary = st.button("Generate Summary")
 
 
