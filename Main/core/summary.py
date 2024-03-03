@@ -400,7 +400,7 @@ def get_ratio_analysis(folder_index):
         {"role": "system",
          "content": f"You are a professional accountant that's tasked to do a Ratio Analysis using the given text and return it in the following json format: {json.dumps(ratio_sheet)}. \n"
                     f"Don't add any extra text except the json formated output, since it's expected to be parsed as json later. \n"
-                    f"example output: \n {json.dumps(ratio_sheet)}"
+                    f"example output: \n {json.dumps(ratio_sheet_example)}"
          },
         {"role": "user", "content": input_txt}
     ]
