@@ -354,6 +354,34 @@ def get_ratio_analysis(folder_index):
         },
         "Year": ""
     }
+    ratio_sheet_example = {
+        "Growth Ratios": {
+            "Sales Growth": 10.5,
+            "Income Growth": -15.0,
+            "Asset Growth": 3.5,
+        },
+        "Profitability Ratios": {
+            "Profit Margin": 1.1,
+            "Return on Assets": 2.1,
+            "Return on Equity": 0,
+            "Dividend Payout Ratio": 1.0,
+            "Price Earnings Ratio": 5.2,
+        },
+        "Activity Ratios": {
+            "Receivable Turnover": 1.0,
+            "Inventory Turnover": 0.5,
+            "Fixed Asset Turnover": 2.1,
+        },
+        "Liquidity Ratios": {
+            "Current Ratio": 3.0,
+            "Quick Ratio": 0.5,
+        },
+        "Solvency Ratios": {
+            "Debt to Total Assets": 10.2
+        },
+        "Year": "2022",
+        "Notes": ""
+    }
     # extract data related to these ratios
     Docs = {}
     for id, val in data_sheet.items():
@@ -371,7 +399,8 @@ def get_ratio_analysis(folder_index):
     messages = [
         {"role": "system",
          "content": f"You are a professional accountant that's tasked to do a Ratio Analysis using the given text and return it in the following json format: {json.dumps(ratio_sheet)}. \n"
-                    f"Don't add any extra text except the json formated output, since it's expected to be parsed as json later."
+                    f"Don't add any extra text except the json formated output, since it's expected to be parsed as json later. \n"
+                    f"example output: \n {json.dumps(ratio_sheet)}"
          },
         {"role": "user", "content": input_txt}
     ]
