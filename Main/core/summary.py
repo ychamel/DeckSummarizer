@@ -352,7 +352,8 @@ def get_ratio_analysis(folder_index):
         "Solvency Ratios": {
             "Debt to Total Assets": 0
         },
-        "Year": ""
+        "Year": "",
+        "Notes": ""
     }
     # extract data related to these ratios
     Docs = {}
@@ -371,7 +372,7 @@ def get_ratio_analysis(folder_index):
     messages = [
         {"role": "system",
          "content": f"You are a professional accountant that's tasked to do a Ratio Analysis using the given text and return it in the following json format: {json.dumps(ratio_sheet)}. \n"
-                    f"The output must be json format parsable, in case you want to add any text add it under 'Notes':'comment' in the json output."
+                    f"The output must be json format parsable, in case you want to add any comments add it under 'Notes'."
          },
         {"role": "user", "content": input_txt}
     ]
