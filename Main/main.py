@@ -157,10 +157,9 @@ if generate_summary:
 
 # generate excel
 if generate_excel:
-    @st.experimental_memo
+    @st.cache_data
     def convert_df(df):
         return df.to_csv(index=False).encode('utf-8')
-
 
     with st.spinner("Generating Report... This may take a while⏳"):
         result = get_ratio_analysis(st.session_state.get("FOLDER_INDEX"))
