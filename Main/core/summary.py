@@ -372,7 +372,7 @@ def get_ratio_analysis(folder_index):
     messages = [
         {"role": "system",
          "content": f"You are a professional accountant that's tasked to do a Ratio Analysis using the given text and return it in the following json format: {json.dumps(ratio_sheet)}. \n"
-                    f"The output must be json format parsable, in case you want to add any comments add it under 'Notes'."
+                    f"The output must be in json format, don't add any text outside the json output, in case you need to add any comments add it under 'Notes' in the json output."
          },
         {"role": "user", "content": input_txt}
     ]
