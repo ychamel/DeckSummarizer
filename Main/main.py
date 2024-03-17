@@ -116,9 +116,9 @@ if update_btn:
     st.session_state["FOLDER_INDEX"] = folder_index
 
     # create a summary
-    if len(chunked_files) > 0:
-        summary = get_summary(chunked_files[0])
-        st.session_state["SUMMARY"] = summary
+    # if len(chunked_files) > 0:
+    #     summary = get_summary(chunked_files[0])
+    #     st.session_state["SUMMARY"] = summary
 
 elif not files:
     st.stop()
@@ -194,8 +194,9 @@ if submit:
 
     # get updated query
     search_query = query + ' \n '
-    if summary:
-        search_query += get_query_answer(query, summary)
+    # if summary:
+    #     search_query += get_query_answer(query, summary)
+    search_query += get_query_answer(query, summary)
 
     result = get_relevant_docs(
         folder_index=folder_index,
