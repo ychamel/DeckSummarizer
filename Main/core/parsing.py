@@ -142,11 +142,10 @@ class PdfFile2(File):
         uuids = {}
         parsing_bar = st.progress(0.0, text="progress")
         size = len(pdf)
-        for i in range(len(pdf)):
+        for i, page in enumerate(pdf):
             # text = page.get_text(sort=True)
             mat = fitz.Matrix(1, 1)
-            page = pdf.load_page(0)
-            pix = page.getPixmap(matrix=mat)
+            pix = page.get_pixmap(matrix=mat)
             pix.save("temp.jpeg")
             with open("temp.jpeg", "rb") as image:
                 binary = image.read()
