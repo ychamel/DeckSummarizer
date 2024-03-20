@@ -113,7 +113,7 @@ class PdfFile(File):
             progress = 0.0
             size = len(uuids.keys())
 
-            for uuid, id in uuids.items():
+            for uuid, id in list(uuids.items()):
                 response = fetch_text(uuid)
                 if response['completed']:
                     docs[id].page_content += f" ----- img_data ----- \n {response['document_text']} \n ----- end ----- "
