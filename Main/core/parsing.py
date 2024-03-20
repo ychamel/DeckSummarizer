@@ -143,26 +143,24 @@ class PdfFile2(File):
         parsing_bar = st.progress(0.0, text="progress")
         size = len(pdf)
         for i, page in enumerate(pdf):
-            text = page.get_text(sort=True)
-            text = strip_consecutive_newlines(text)
-            # check ocr enabled
-            if st.session_state["OCR_ENABLED"]:
-                for images in page.get_images():
-                    xref = images[0]
-                    img = pdf.extract_image(xref)
-                    name = str(xref)
-                    binary = img['image']
-                    response = parse_img(name, binary)
-                    if response:
-                        uuids[response['uid']] = len(docs)
-                    sleep(5)
-            doc = Document(page_content=text.strip())
-            doc.metadata["page"] = i + 1
-            docs.append(doc)
+            # text = page.get_text(sort=True)
+            mat = fitz.Matrix(1, 1)
+            pix = page.getPixmap(matrix=mat)
+            pix.save("temp.jpeg")
+            with open("temp.jpeg", "rb") as image:
+                binary = image.read()
+                name = f"pdf_img_{i}.jpeg"
+
+                response = parse_img(name, binary)
+                if response:
+                    uuids[response['uid']] = len(docs)
+                    doc = Document(page_content="")
+                    doc.metadata["page"] = i + 1
+                    docs.append(doc)
+                sleep(5)
+
             # update progress
             parsing_bar.progress(i / size, "Parsing PDF")
-        # retrieve images
-        progress_text = "Decoding Images"
         # fetching responses
         count = 0
         while len(uuids.keys()) > 0 and count < 10:
@@ -172,13 +170,13 @@ class PdfFile2(File):
             for uuid, id in list(uuids.items()):
                 response = fetch_text(uuid)
                 if response['completed']:
-                    docs[id].page_content += f" ----- img_data ----- \n {response['document_text']} \n ----- end ----- "
+                    docs[id].page_content += response['document_text']
                     del uuids[uuid]
                 sleep(1)
 
                 # progress
                 progress += 1.0
-                parsing_bar.progress(id / size, "Decoding Images")
+                parsing_bar.progress(progress / size, "Decoding Images")
 
             # add timeout
             count += 1
@@ -238,6 +236,8 @@ def read_file(file: BytesIO) -> File:
     if file.name.lower().endswith(".docx"):
         return DocxFile.from_bytes(file)
     elif file.name.lower().endswith(".pdf"):
+        if st.session_state["OCR_ENABLED"]:
+            return PdfFile2.from_bytes(file)
         return PdfFile.from_bytes(file)
     elif file.name.lower().endswith(".txt"):
         return TxtFile.from_bytes(file)

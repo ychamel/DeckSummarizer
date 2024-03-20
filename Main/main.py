@@ -101,7 +101,7 @@ if update_btn:
     # chunk files
     chunked_files = []
     for file in files:
-        chunked_file = chunk_file(file, chunk_size=400, chunk_overlap=50)
+        chunked_file = chunk_file(file, chunk_size=800, chunk_overlap=50)
         chunked_files.append(chunked_file)
     st.session_state["CHUNKED_FILES"] = chunked_files
 
