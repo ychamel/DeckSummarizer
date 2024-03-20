@@ -160,7 +160,7 @@ class PdfFile2(File):
                 sleep(5)
 
             # update progress
-            parsing_bar.progress(i / size, "Parsing PDF")
+            parsing_bar.progress(i / size, "Parsing PDF with OCR")
         # fetching responses
         count = 0
         while len(uuids.keys()) > 0 and count < 10:
@@ -238,7 +238,8 @@ def read_file(file: BytesIO) -> File:
     elif file.name.lower().endswith(".pdf"):
         if st.session_state["OCR_ENABLED"]:
             return PdfFile2.from_bytes(file)
-        return PdfFile.from_bytes(file)
+        else:
+            return PdfFile.from_bytes(file)
     elif file.name.lower().endswith(".txt"):
         return TxtFile.from_bytes(file)
     elif file.name.lower().endswith(".pptx"):
