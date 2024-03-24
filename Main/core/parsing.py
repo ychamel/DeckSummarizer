@@ -144,7 +144,7 @@ class PdfFile2(File):
         size = len(pdf)
         for i, page in enumerate(pdf):
             # text = page.get_text(sort=True)
-            mat = fitz.Matrix(1, 1)
+            mat = fitz.Matrix(2, 2)
             pix = page.get_pixmap(matrix=mat)
             pix.save("temp.jpeg")
             with open("temp.jpeg", "rb") as image:
