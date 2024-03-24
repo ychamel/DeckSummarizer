@@ -201,11 +201,13 @@ class XLFile(File):
     @classmethod
     def from_bytes(cls, file: BytesIO) -> "XLFile":
         dataframes = pd.read_excel(file, None)
+
         docs = []
         for title, dataframe in dataframes.items():
-            dataframe = strip_consecutive_newlines(dataframe.to_string())
+            #dataframe = strip_consecutive_newlines(dataframe.to_string())
             file.seek(0)
-            doc = Document(page_content=dataframe.strip())
+            doc = Document(page_content=dataframe.to_csv())
+            doc.metadata["page"] = title
             docs.append(doc)
         return cls(name=file.name, id=md5(file.read()).hexdigest(), docs=docs)
 
