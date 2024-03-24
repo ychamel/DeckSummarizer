@@ -233,17 +233,21 @@ def write_RSM(files: list[File]):
 def get_summary(file: File):
     # get input text
     input_txt = ""
+    i = 0
     for doc in file.docs:
+        i += 1
         input_txt += doc.page_content + '\n'
+        if i > 5:
+            break
     messages = [
         {"role": "system",
-         "content": "You are a text summariser that take a chunk of text and returns its summary."
+         "content": "You are a text summariser that take a chunk of text and returns its summary outlining what the text is about."
          },
         {"role": "user", "content": f"text: {input_txt}"}
     ]
     # f"some key topics to cover are {topics.keys()} described as follows {topics}."
     response = openai.ChatCompletion.create(
-        model="gpt-4-0125-preview",
+        model="gpt-3.5-turbo-1106",
         messages=messages
     )
     answer = ""

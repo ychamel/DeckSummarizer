@@ -145,7 +145,7 @@ def get_query_answer(query, summary):
         {"role": "system",
          "content": "You are an answer generator for a search engine, you will be given a question and you'll return a list of relevant keywords to look for. \n"
                     "ex: Q: 'what is the net operational profit in 2022?', A: 'Buisness data, gross profit, operating expenses, net sales, revenue, cost of sales, etc.' "
-                    #f"Context: {summary}"
+                    f"Context: {summary}"
          },
         {"role": "user", "content": f"question: {query}"}
     ]

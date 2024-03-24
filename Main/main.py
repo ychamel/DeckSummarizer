@@ -116,9 +116,9 @@ if update_btn:
     st.session_state["FOLDER_INDEX"] = folder_index
 
     # create a summary
-    # if len(chunked_files) > 0:
-    #     summary = get_summary(chunked_files[0])
-    #     st.session_state["SUMMARY"] = summary
+    if len(chunked_files) > 0:
+        summary = get_summary(chunked_files[0])
+        st.session_state["SUMMARY"] = summary
 
 elif not files:
     st.stop()
@@ -143,7 +143,6 @@ with st.expander("Advanced Options"):
     generate_excel = st.button("Generate Ratio Analysis")
     generate_summary = st.button("Generate Summary")
 
-
 # generate summary
 if generate_summary:
     with st.spinner("Generating Report... This may take a while⏳"):
@@ -160,6 +159,7 @@ if generate_excel:
     @st.cache_data
     def convert_df(df):
         return df.to_csv(index=False).encode('utf-8')
+
 
     with st.spinner("Generating Report... This may take a while⏳"):
         result = get_ratio_analysis(st.session_state.get("FOLDER_INDEX"))
