@@ -1,3 +1,4 @@
+import urllib.request
 import uuid
 from io import BytesIO
 from time import sleep
@@ -170,7 +171,7 @@ class PdfFile2(File):
             for uuid, id in list(uuids.items()):
                 response = fetch_text(uuid)
                 if response['completed']:
-                    docs[id].page_content += response['document_text']
+                    docs[id].page_content += get_csv(response['sheet_file'])
                     del uuids[uuid]
                 sleep(1)
 
@@ -262,3 +263,11 @@ def scrape_url(url: str) -> List[File]:
         file = File(name=web_url, id=str(uuid.uuid4()), docs=[doc])
         files.append(file)
     return files
+
+def get_csv(link):
+    file = "temp.xlsx"
+    urllib.request.urlretrieve(link, file)
+    dataframes = pd.read_excel(file, None)
+    for title, dataframe in dataframes.items():
+        return dataframe.to_csv()
+    return None
